@@ -15,7 +15,7 @@ public class Shield : MonoBehaviour
     void Update()
     {
         ChangeColor();
-        Debug.Log("прелээстно");
+        Debug.Log("hehe");
     }
     void ChangeColor()
     {
