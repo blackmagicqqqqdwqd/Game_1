@@ -10,4 +10,8 @@ public abstract class RepositorysBase
         T repository = new T();
         repositorys[typeof(T)] = repository;
     }
+    public void RemoveRepository<T>() where T: Repository
+    {
+        repositorys.Remove(typeof(T));
+    }
 }
