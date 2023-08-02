@@ -6,10 +6,13 @@ public class Scene
 {
    InteractorsBase interactorsBase;
    RepositorysBase repositorysBase;
-   SceneConfig sceneConfig;
-   public Scene()
+   SceneConfig sceneconfig;
+   public Scene(SceneConfig config)
    {
-      
+       sceneconfig = config;
+       interactorsBase = new InteractorsBase(config);
+       repositorysBase = new RepositorysBase(config);
+
    }
    public void Initialize()
    {

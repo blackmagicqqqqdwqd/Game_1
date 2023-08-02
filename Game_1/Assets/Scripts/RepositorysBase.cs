@@ -5,9 +5,16 @@ using UnityEngine;
 public class RepositorysBase 
 {
     Dictionary<Type, Repository> repositorys;
-    public void CreatRepository<T>() where T: Repository,new() {
-        T repository = new T();
-        repositorys[typeof(T)] = repository;
+    SceneConfig sceneConfig;
+    public RepositorysBase(SceneConfig sceneConfig)
+    {
+        this.sceneConfig = sceneConfig;
+        
+    }
+  
+    public void CreatAllRepository() 
+    {
+       repositorys = sceneConfig.CreatAllRepository();
     }
     public void RemoveRepository<T>() where T: Repository
     {
