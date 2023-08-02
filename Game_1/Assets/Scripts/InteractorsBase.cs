@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-public abstract class InteractorsBase 
+public class InteractorsBase 
 {
     Dictionary<Type ,Interactor> interactors;
-    public abstract void Initialize();
     public void CreatInteractor<T>() where T: Interactor,new() {
         T interactor = new T();
         interactors[typeof(T)] = interactor;

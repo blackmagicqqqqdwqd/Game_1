@@ -7,7 +7,7 @@ public class Scene_1 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        InteractorsBase interactorsBase = new InteractorsBase();
+       Scene s = new Scene();
     }
 
     // Update is called once per frame
