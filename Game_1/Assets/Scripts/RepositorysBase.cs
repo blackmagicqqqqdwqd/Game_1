@@ -14,4 +14,16 @@ public abstract class RepositorysBase
     {
         repositorys.Remove(typeof(T));
     }
+     public void InitializeAllRepository()
+    {
+        foreach (var repository in repositorys.Values)
+        {
+           repository.Initialize();
+        }
+
+    }
+    public Repository GetRepository<T>() where T: Repository
+    {
+        return repositorys[typeof(T)];        
+    }
 }
