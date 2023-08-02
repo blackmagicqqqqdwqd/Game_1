@@ -16,8 +16,8 @@ public class Shield : MonoBehaviour
     }
     void ChangeColor()
     {
-        if (Input.GetKey(KeyCode.Alpha1)) { sr.enabled = true; sr.color = Color.red; }
-        else if (Input.GetKey(KeyCode.Alpha2)) { sr.enabled = true; sr.color = Color.blue; }
+        if (Input.GetKey(KeyCode.A)) { sr.enabled = true; sr.color = Color.red; }
+        else if (Input.GetKey(KeyCode.D)) { sr.enabled = true; sr.color = Color.blue; }
         else sr.enabled = false;
     }
 }
