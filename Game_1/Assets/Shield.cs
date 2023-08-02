@@ -5,6 +5,7 @@ using UnityEngine;
 public class Shield : MonoBehaviour
 {
     SpriteRenderer sr;
+    int x;
     void Start()
     {
         sr = GetComponent<SpriteRenderer>();
