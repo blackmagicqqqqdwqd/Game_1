@@ -1,16 +1,11 @@
 
 public abstract class Interactor 
 {
-     public virtual void Initialize()
+
+    public virtual void Initialize() // после создания всех репозиториев
     {
 
     }
-    public virtual void OnCreat()
-    {
-        
-    }
-    public virtual void OnStart() 
-    {
-        
-    }
+ 
+   
 }

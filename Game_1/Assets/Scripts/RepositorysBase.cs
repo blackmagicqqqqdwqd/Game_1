@@ -8,13 +8,13 @@ public class RepositorysBase
     SceneConfig sceneConfig;
     public RepositorysBase(SceneConfig sceneConfig)
     {
-        this.sceneConfig = sceneConfig;
+        //this.sceneConfig = sceneConfig;
         
     }
-  
     public void CreatAllRepository() 
     {
-       repositorys = sceneConfig.CreatAllRepository();
+
+       //repositorys = sceneConfig.CreatAllRepository();
     }
     public void RemoveRepository<T>() where T: Repository
     {

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+ 
 public class Scene 
 {
    InteractorsBase interactorsBase;
@@ -14,8 +14,16 @@ public class Scene
        repositorysBase = new RepositorysBase(config);
 
    }
-   public void Initialize()
+   public IEnumerator InitializeRoutine()
    {
-
+        repositorysBase.CreatAllRepository();
+        interactorsBase.CreatAllInteractor();
+        yield return null;
+        repositorysBase.InitializeAllRepository(); 
+        interactorsBase.InitializeAllInteractor(); // подписываем на репозитории
+    }
+   public IEnumerator StartGame()
+   {
+    return null;
    }
 }

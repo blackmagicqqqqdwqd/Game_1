@@ -15,6 +15,10 @@ public class InteractorsBase
         interactors = sceneConfig.CreatAllIntetactor();
 
     }
+    public void InitializeAllInteractor()
+    {
+
+    }
     public void Remove<T>() where T : Interactor
     {
         interactors.Remove(typeof(T));
@@ -23,6 +27,7 @@ public class InteractorsBase
     {
         return interactors[typeof(T)];
     }
+    /*
     public void StartAllInteractor()
     {
         foreach (var interactor in interactors.Values)
@@ -30,12 +35,5 @@ public class InteractorsBase
             interactor.OnStart();
         }
     }
-     public void InitializeAllInteractor()
-    {
-        foreach (var interactor in interactors.Values)
-        {
-            interactor.OnStart();
-        }
-    }
-
+    */
 }

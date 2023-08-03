@@ -6,7 +6,9 @@ public class Scene_1 : MonoBehaviour
 {
     void Start()
     {
-       //Scene s = new Scene();
+        SC sc = new SC();
+        Scene s = new Scene(sc);
+        StartCoroutine(s.InitializeRoutine());
     }
 
     void Update()
