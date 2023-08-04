@@ -13,7 +13,6 @@ public class Shield : MonoBehaviour
     void Update()
     {
         ChangeColor();
-       //Debug.Log(Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().damag);
     }
     void ChangeColor()
     {

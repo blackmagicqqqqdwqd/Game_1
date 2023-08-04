@@ -11,6 +11,7 @@ public class SC : SceneConfig
         Dictionary<Type, Interactor> InteractorMap = new Dictionary<Type, Interactor>();
         CreatInteractor<TurretsInteractor>(InteractorMap);
         CreatInteractor<LazerWallsInteractor>(InteractorMap);
+        CreatInteractor<PlayerInteractor>(InteractorMap);
         // интеракторы 
         // интеракторы 
         // ...
@@ -22,6 +23,7 @@ public class SC : SceneConfig
         Dictionary<Type, Repository> RepocitoryMap = new Dictionary<Type, Repository>();
         CreatRepocitory<TurretsRepocitort>(RepocitoryMap);
         CreatRepocitory<LazerWallsRepository>(RepocitoryMap);
+        CreatRepocitory<PlayerRepocitory>(RepocitoryMap);
         //репозитории
         //репозитории
         //...

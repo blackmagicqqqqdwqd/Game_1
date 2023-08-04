@@ -15,7 +15,9 @@ public class Scene_1 : MonoBehaviour
     }
     private void Start()
     {
-        s.interactorsBase.GetInteractor<LazerWallsInteractor>().Creat(new Vector2(0, 0), 10, Color.red); ;
+      
+        s.interactorsBase.GetInteractor<TurretsInteractor>().CreatTurrent(3,0);
+      //  s.interactorsBase.GetInteractor<LazerWallsInteractor>().Creat(new Vector2(0, 0), 10, Color.red); ;
     }
     private void Update()
     {

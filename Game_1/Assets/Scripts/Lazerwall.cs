@@ -17,7 +17,7 @@ public class Lazerwall
     public Lazerwall(Vector2 center, int length, Color color)
     {
         wight = length;
-        GameObject this_lazer = new GameObject();
+        this_lazer = new GameObject();
         this.color = color;
         lr = this_lazer.AddComponent<LineRenderer>();
         lr.SetPosition(0, center - new Vector2(wight / 2, 0));
@@ -25,17 +25,23 @@ public class Lazerwall
         lr.SetWidth(0.3f, 0.3f);
         lr.material = Resources.Load<Material>("Lazer");
         lr.SetColors(color, color);
-        var rb = this_lazer.AddComponent<Rigidbody2D>();
+        rb = this_lazer.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
         var lm = rb.AddComponent<LazerMove>();
         lm.lazerwall = this;
         name = "12";
-        rb.AddForce(new Vector2(0, 10));
+       
+        rb.AddForce(new Vector2(0, 60));
     }
     public void Move(Vector3 direction)
     {
         lr.SetPosition(0, lr.GetPosition(0) + direction);
         lr.SetPosition(1, lr.GetPosition(1) + direction);
+    }
+    public void Move2(Vector3 center)
+    {
+        lr.SetPosition(0, center - new Vector3(wight / 2, 0,0));
+        lr.SetPosition(1, center + new Vector3(wight / 2, 0, 0));
     }
 
 }
