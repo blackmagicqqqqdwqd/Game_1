@@ -8,7 +8,7 @@ public class SC : SceneConfig
     public override Dictionary<Type, Interactor> CreatAllIntetactor()
     {
         Dictionary<Type, Interactor> InteractorMap = new Dictionary<Type, Interactor>();
-        CreatInteractor<PlayerIntetactor>(InteractorMap);
+       // CreatInteractor<PlayerIntetactor>(InteractorMap);
         // интеракторы 
         // интеракторы 
         // ...
@@ -18,7 +18,7 @@ public class SC : SceneConfig
     public override Dictionary<Type, Repository> CreatAllRepository()
     {
         Dictionary<Type, Repository> RepocitoryMap = new Dictionary<Type, Repository>();
-        CreatRepocitory<PlayerRepocitory>(RepocitoryMap);
+       // CreatRepocitory<PlayerRepocitory>(RepocitoryMap);
         //репозитории
         //репозитории
         //...

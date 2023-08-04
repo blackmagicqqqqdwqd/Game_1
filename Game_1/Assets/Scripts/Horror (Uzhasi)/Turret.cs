@@ -57,4 +57,22 @@ public class Turret : MonoBehaviour
         }
         StartCoroutine(ShootTarget(target));
     }
+    class TurretRepocitort:Repository
+    {
+        public override void Initialize()
+        {
+            base.Initialize();
+        }
+    }
+    class TurretInteractor : Interactor
+    {
+        public void CreatTurrent()
+        {
+
+        }
+        public override void Initialize()
+        {
+            base.Initialize();
+        }
+    }
 }
