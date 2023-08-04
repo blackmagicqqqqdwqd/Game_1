@@ -14,6 +14,7 @@ public class Turret : MonoBehaviour
     float length = 0.125f;
     void Start()
     {
+        Scene_1.s.interactorsBase.GetInteractor<TurretsInteractor>().CreatTurrent(2, 2);
         lr = GetComponent<LineRenderer>();
         sr = GetComponent<SpriteRenderer>();
         lr.SetWidth(0.25f, 0.25f);
@@ -45,6 +46,7 @@ public class Turret : MonoBehaviour
         }
         
     }
+    
     IEnumerator ShootPrepare()
     {
         for (int i = 0; i < 3; i++)
@@ -57,22 +59,41 @@ public class Turret : MonoBehaviour
         }
         StartCoroutine(ShootTarget(target));
     }
-    class TurretRepocitort:Repository
+    
+    public class TurretsRepocitort:Repository
     {
+        public List<Turret_Clone> turrets; 
         public override void Initialize()
         {
-            base.Initialize();
+            turrets = new List<Turret_Clone>();
         }
     }
-    class TurretInteractor : Interactor
+    public class Turret_Clone
     {
-        public void CreatTurrent()
+        string name;
+        string color;
+        public Turret_Clone(int x, int y)
         {
+            GameObject gameObject = new GameObject();
+            name = gameObject.name;
+            gameObject.AddComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/ProtectedCircle");
+            gameObject.AddComponent<LineRenderer>();
+            gameObject.AddComponent<Animator>();
+            gameObject.transform.position = new Vector3(x, y, 0);
+        }
 
+    }
+    public class TurretsInteractor : Interactor
+    {
+        TurretsRepocitort turretsRepocitort;
+        public void CreatTurrent(int x , int y)
+        {
+            Turret_Clone turret = new Turret_Clone(x,y);
+            turretsRepocitort.turrets.Add(turret);
         }
         public override void Initialize()
         {
-            base.Initialize();
+            turretsRepocitort = Scene_1.s.repositorysBase.GetRepository<TurretsRepocitort>();
         }
     }
 }

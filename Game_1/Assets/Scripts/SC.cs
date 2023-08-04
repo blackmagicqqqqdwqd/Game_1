@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Turret;
 
 public class SC : SceneConfig
 {
     public override Dictionary<Type, Interactor> CreatAllIntetactor()
     {
         Dictionary<Type, Interactor> InteractorMap = new Dictionary<Type, Interactor>();
-       // CreatInteractor<PlayerIntetactor>(InteractorMap);
+        CreatInteractor<TurretsInteractor>(InteractorMap);
         // интеракторы 
         // интеракторы 
         // ...
@@ -18,7 +19,7 @@ public class SC : SceneConfig
     public override Dictionary<Type, Repository> CreatAllRepository()
     {
         Dictionary<Type, Repository> RepocitoryMap = new Dictionary<Type, Repository>();
-       // CreatRepocitory<PlayerRepocitory>(RepocitoryMap);
+        CreatRepocitory<TurretsRepocitort>(RepocitoryMap);
         //репозитории
         //репозитории
         //...
