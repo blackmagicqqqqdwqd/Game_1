@@ -33,7 +33,8 @@ public class Turret : MonoBehaviour
     }
     IEnumerator ShootTarget(GameObject target)
     {
-        yield return new WaitForSeconds(0.035f);
+        
+        yield return new WaitForSeconds(0.015f);
         lr.SetPosition(1, Vector3.Lerp(lr.GetPosition(0), target.transform.position, length + initLength / 4));
         length += initLength / 4;
         if (an.GetBool("blue_atack") == true) an.SetBool("blue_atack", false); else if (an.GetBool("red_atack") == true) an.SetBool("red_atack", false);
@@ -90,14 +91,15 @@ public class Turret : MonoBehaviour
     {
         string name;
         string color;
+        GameObject this_turret;
         public Turret_Clone(int x, int y)
         {
-            GameObject gameObject = new GameObject();
-            name = gameObject.name;
-            gameObject.AddComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/ProtectedCircle");
-            gameObject.AddComponent<LineRenderer>();
-            gameObject.AddComponent<Animator>();
-            gameObject.transform.position = new Vector3(x, y, 0);
+            GameObject this_turret = new GameObject();
+            name = this_turret.name;
+            this_turret.AddComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/ProtectedCircle");
+            this_turret.AddComponent<LineRenderer>();
+            this_turret.AddComponent<Animator>();
+            this_turret.transform.position = new Vector3(x, y, 0);
         }
 
     }
