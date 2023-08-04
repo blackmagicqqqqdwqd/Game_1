@@ -8,7 +8,7 @@ public class InteractorsBase
     SceneConfig sceneConfig;
     public InteractorsBase(SceneConfig sceneConfig)
     {
-        sceneConfig = this.sceneConfig;
+        this.sceneConfig = sceneConfig;
     }
     public void CreatAllInteractor()
     {
@@ -17,15 +17,15 @@ public class InteractorsBase
     }
     public void InitializeAllInteractor()
     {
-
+        foreach (var interactor in interactors.Values) { interactor.Initialize(); }
     }
     public void Remove<T>() where T : Interactor
     {
         interactors.Remove(typeof(T));
     }
-    public Interactor GetInteractor<T>() where T : Interactor
+    public T GetInteractor<T>() where T : Interactor
     {
-        return interactors[typeof(T)];
+        return interactors[typeof(T)] as T;
     }
     /*
     public void StartAllInteractor()

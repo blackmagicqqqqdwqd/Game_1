@@ -5,5 +5,5 @@ public abstract class Repository
     {
 
     }
-
+    
 }

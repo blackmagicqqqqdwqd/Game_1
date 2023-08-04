@@ -8,19 +8,17 @@ public class RepositorysBase
     SceneConfig sceneConfig;
     public RepositorysBase(SceneConfig sceneConfig)
     {
-        //this.sceneConfig = sceneConfig;
-        
+        this.sceneConfig = sceneConfig;
     }
     public void CreatAllRepository() 
     {
-
-       //repositorys = sceneConfig.CreatAllRepository();
+       repositorys = sceneConfig.CreatAllRepository();
     }
     public void RemoveRepository<T>() where T: Repository
     {
         repositorys.Remove(typeof(T));
     }
-     public void InitializeAllRepository()
+    public void InitializeAllRepository()
     {
         foreach (var repository in repositorys.Values)
         {
@@ -28,8 +26,8 @@ public class RepositorysBase
         }
 
     }
-    public Repository GetRepository<T>() where T: Repository
+    public T GetRepository<T>() where T: Repository
     {
-        return repositorys[typeof(T)];        
+        return repositorys[typeof(T)] as T;        
     }
 }

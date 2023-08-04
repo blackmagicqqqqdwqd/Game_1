@@ -5,8 +5,6 @@ using UnityEngine;
 public class Shield : MonoBehaviour
 {
     SpriteRenderer sr;
-    int x;
-    int x2;
     void Start()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -15,7 +13,7 @@ public class Shield : MonoBehaviour
     void Update()
     {
         ChangeColor();
-        Debug.Log("hehe");
+        Debug.Log(Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().damag);
     }
     void ChangeColor()
     {

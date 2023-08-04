@@ -23,8 +23,14 @@ public class Turret : MonoBehaviour
     }
     void Update()
     {
+
         if(Input.GetKeyDown(KeyCode.Space)) StartCoroutine(ShootPrepare());            
-        
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            StartCoroutine(ShootTarget(target));
+        }
+
     }
     IEnumerator ShootTarget(GameObject target)
     {        
