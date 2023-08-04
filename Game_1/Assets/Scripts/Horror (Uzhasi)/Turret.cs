@@ -8,13 +8,15 @@ public class Turret : MonoBehaviour
 {
     LineRenderer lr;
     SpriteRenderer sr;
+    Animator an;
     Vector3 targetVector;
     public GameObject target;
     float initLength = 0.125f;
     float length = 0.125f;
     void Start()
     {
-        Scene_1.s.interactorsBase.GetInteractor<TurretsInteractor>().CreatTurrent(2, 2);
+
+        an = GetComponent<Animator>();
         lr = GetComponent<LineRenderer>();
         sr = GetComponent<SpriteRenderer>();
         lr.SetWidth(0.25f, 0.25f);
@@ -25,42 +27,58 @@ public class Turret : MonoBehaviour
     void Update()
     {
 
-        if(Input.GetKeyDown(KeyCode.Space)) StartCoroutine(ShootPrepare());            
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            StartCoroutine(ShootTarget(target));
-        }
+        if (Input.GetKeyDown(KeyCode.Alpha8) && an.GetBool("idle")) StartCoroutine(ShootPrepare("blue"));
+        else if (Input.GetKeyDown(KeyCode.Alpha9) && an.GetBool("idle")) StartCoroutine(ShootPrepare("red"));
 
     }
     IEnumerator ShootTarget(GameObject target)
-    {        
-        yield return new WaitForSeconds(0.025f);
-            lr.SetPosition(1, Vector3.Lerp(lr.GetPosition(0), target.transform.position, length + initLength/4));
-        length += initLength/4;
+    {
+        yield return new WaitForSeconds(0.035f);
+        lr.SetPosition(1, Vector3.Lerp(lr.GetPosition(0), target.transform.position, length + initLength / 4));
+        length += initLength / 4;
+        if (an.GetBool("blue_atack") == true) an.SetBool("blue_atack", false); else if (an.GetBool("red_atack") == true) an.SetBool("red_atack", false);
         if (lr.GetPosition(1) != target.transform.position) { Debug.Log("2"); StartCoroutine(ShootTarget(target)); }
         else
         {
             yield return new WaitForSeconds(0.25f);
             lr.SetPosition(1, lr.GetPosition(0));
+            length = initLength;
+            an.SetBool("idle", true);
         }
         
+
     }
-    
-    IEnumerator ShootPrepare()
+
+   
+
+    IEnumerator ShootPrepare(string color)
+
     {
-        for (int i = 0; i < 3; i++)
+        if (color == "blue")
         {
-            sr.color = Color.red;
-            yield return new WaitForSeconds(0.2f);
-            sr.color = Color.white;
-            yield return new WaitForSeconds(0.2f);
-            Debug.Log("1");
+            lr.startColor = Color.blue;
+            lr.endColor = Color.blue;
+            an.SetBool("blue_atack", true);
+            an.SetBool("idle", false);
         }
+        else if (color == "red") {
+            lr.startColor = Color.red;
+            lr.endColor = Color.red;
+            an.SetBool("red_atack", true);
+            an.SetBool("idle", false);
+        }
+        yield return new WaitForSeconds(2.05f);
         StartCoroutine(ShootTarget(target));
     }
+
     
     public class TurretsRepocitort:Repository
+    {
+        List<Turret_Clone> turrrets = new List<Turret_Clone>();
+    }
+
+}
+    public class TurretsRepocitort :Repository
     {
         public List<Turret_Clone> turrets; 
         public override void Initialize()
@@ -96,4 +114,4 @@ public class Turret : MonoBehaviour
             turretsRepocitort = Scene_1.s.repositorysBase.GetRepository<TurretsRepocitort>();
         }
     }
-}
+
