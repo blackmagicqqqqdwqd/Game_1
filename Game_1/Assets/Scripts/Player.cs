@@ -20,13 +20,17 @@ public enum Color_state
 }
 public class PlayerRepocitory:Repository
 {
+    public bool invulnerable = false;
     public Color_state color { get; set; }
     public SpriteRenderer srPlayer { get; set; }
     public SpriteRenderer srShield { get; set; }
     public GameObject player { get; set; }
     public GameObject shield { get; set; }
     public CircleCollider2D ccPlayer { get; set; }
-    public int HP { get; set; }
+    public int HP 
+    { 
+        get; set; 
+    }
     public override void Initialize() 
     {
         HP = 3;
@@ -89,6 +93,10 @@ public class PlayerInteractor:Interactor
     {
         myR.HP -= 1;
         Scene_1.s.interactorsBase.GetInteractor<HP_UIInteractor>().Set_HP(myR.HP);
+    }
+    public IEnumerable Invulnerable()
+    {
+        yield return new WaitForSeconds(1);
     }
 }
 
