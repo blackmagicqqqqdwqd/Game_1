@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Shield : MonoBehaviour
 {
+    /*
     SpriteRenderer sr;
     void Start()
     {
@@ -21,4 +22,5 @@ public class Shield : MonoBehaviour
         else if (Input.GetKey(KeyCode.Alpha2)) { sr.enabled = true; sr.color = Color.blue; }
         else sr.enabled = false;
     }   
+    */
 }

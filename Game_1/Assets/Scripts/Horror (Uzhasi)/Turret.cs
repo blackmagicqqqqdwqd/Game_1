@@ -10,14 +10,12 @@ public class Turret : MonoBehaviour
     public Turret_Clone repocitory;
     float initLength = 0.125f;
     float length = 0.125f;
-
     public void Atack() => StartCoroutine(ShootPrepare(repocitory.color));
     public void Update()
     {
        
         if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(repocitory.lr.GetPosition(1)))
         {
-           
             if (repocitory.color != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color)
             {
                 Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Died();
@@ -68,8 +66,6 @@ public class Turret : MonoBehaviour
     }
 
 }
-
-
 public class Turret_Clone
 {
     string name;
@@ -85,9 +81,7 @@ public class Turret_Clone
         name = this_turret.name;
         var SR = this_turret.AddComponent<SpriteRenderer>();
         SR.sprite = Resources.Load<Sprite>("Sprites/ProtectedCircle");
-
         lr = this_turret.AddComponent<LineRenderer>();
-
         anim = this_turret.AddComponent<Animator>();
         anim.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Animation/Turret 1");
         this_turret.transform.position = new Vector3(x, y, 0);
