@@ -19,6 +19,7 @@ public class Lazerwall : MonoBehaviour
                 Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Died();
             }
 
+
         }
     }
 
