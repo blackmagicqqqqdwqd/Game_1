@@ -118,25 +118,38 @@ public class TurretsInteractor : Interactor
     {
         turretsRepocitort = Scene_1.s.repositorysBase.GetRepository<TurretsRepocitort>();
     }
-    public IEnumerator SquareAtack(float distans)
+    public IEnumerator SquareAtack()
     {
-        GameObject player = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player;
-        Vector3 v_1 =  player.transform.TransformPoint(new Vector3(distans, distans, 0));
-        Turret_Clone turret_1 = CreatTurrent(v_1.x, v_1.y, Color_state.red);
-        Vector3 v_2 = player.transform.TransformPoint(new Vector3(-distans, -distans, 0));
-        Turret_Clone turret_2 = CreatTurrent(v_2.x, v_2.y, Color_state.red);
-        Vector3 v_3 = player.transform.TransformPoint(new Vector3(distans, -distans, 0));
-        Turret_Clone turret_3 = CreatTurrent(v_3.x, v_3.y, Color_state.red);
-        Vector3 v_4 = player.transform.TransformPoint(new Vector3(-distans, distans, 0));
-        Turret_Clone turret_4 = CreatTurrent(v_4.x, v_4.y, Color_state.red);
-        yield return new WaitForSeconds(2);
-        turret_1.turretScript.Atack();
-        yield return new WaitForSeconds(2);
-        turret_2.turretScript.Atack();
-        yield return new WaitForSeconds(2);
-        turret_3.turretScript.Atack();
-        yield return new WaitForSeconds(2);
-        turret_4.turretScript.Atack();
+
+        foreach (Vector3 p in CircleSpawn(4, 3, 0, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position))
+        {
+            CreatTurrent(p.x, p.y, Color_state.red);
+        }
+        foreach (var v in turretsRepocitort.turrets )
+        {
+            yield return new WaitForSeconds(2);
+            v.turretScript.Atack();
+        }
+
+         List<Vector3> CircleSpawn(float rad, int amount, float rot, Vector3 coord)
+        {
+            if (rad > 0 && amount > 0)
+            {
+                List<Vector3> SpawnedObjects = new List<Vector3>();
+                for (int i = 1; i <= amount; ++i)
+                {
+                    GameObject go = new GameObject("Spawned" + i);
+                    go.transform.position = new Vector3(coord.x + rad * Mathf.Cos((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), coord.y + rad * Mathf.Sin((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), 0);
+                    go.AddComponent<SpriteRenderer>();
+                    go.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/ProtectedCircle");
+                    SpawnedObjects.Add(go.transform.position);
+                }
+                return SpawnedObjects;
+            }
+            else return null;
+        }
+        //GameObject player = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player;
+
     }
 }
 

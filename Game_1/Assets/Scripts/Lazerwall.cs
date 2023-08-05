@@ -4,34 +4,69 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class Lazerwall 
+
+
+public class Lazerwall : MonoBehaviour
 {
-    public string name;
-    GameObject this_lazer;
-    Vector3 point_1;
-    Vector3 point_2;
-    Color color;
+    public Lazerwall_clone lazerwall;
+    void Update()
+    {
+        lazerwall.Move2(transform.position);
+        if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(transform.position))
+        {
+            if (lazerwall.Color != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color)
+            {
+                Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Died();
+            }
+
+        }
+    }
+
+}
+
+public class Lazerwall_clone 
+{
+    public GameObject This_lazer { get; set; }
+    public Color_state Color{ get; set; }
     int wight;
     public Rigidbody2D rb; 
     LineRenderer lr;
-    public Lazerwall(Vector2 center, int length, Color color)
+    public Lazerwall_clone(Vector2 center, int length, Color_state color)
     {
+        this.Color = color;
         wight = length;
-        this_lazer = new GameObject();
-        this.color = color;
-        lr = this_lazer.AddComponent<LineRenderer>();
+        This_lazer = new GameObject();
+
+        This_lazer.transform.position = center;
+        lr = This_lazer.AddComponent<LineRenderer>();
+        lr.sortingOrder = 1;
         lr.SetPosition(0, center - new Vector2(wight / 2, 0));
         lr.SetPosition(1, center + new Vector2(wight / 2, 0));
         lr.SetWidth(0.3f, 0.3f);
         lr.material = Resources.Load<Material>("Lazer");
-        lr.SetColors(color, color);
-        rb = this_lazer.AddComponent<Rigidbody2D>();
+        switch (color)
+        {
+            case Color_state.red:
+                lr.SetColors(UnityEngine.Color.red, UnityEngine.Color.red);
+                break;
+            case Color_state.blue:
+                lr.SetColors(UnityEngine.Color.blue, UnityEngine.Color.blue);
+                break;
+            case Color_state.purple:
+                lr.SetColors(UnityEngine.Color.magenta, UnityEngine.Color.magenta);
+                break;
+            case Color_state.none:
+                lr.SetColors(UnityEngine.Color.white, UnityEngine.Color.white);
+                break;
+            default:
+                lr.SetColors(UnityEngine.Color.black, UnityEngine.Color.black);
+                break;
+        }
+        rb = This_lazer.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
-        var lm = rb.AddComponent<LazerMove>();
+        var lm = rb.AddComponent<Lazerwall>();
         lm.lazerwall = this;
-        name = "12";
-       
-        rb.AddForce(new Vector2(0, 60));
+        rb.AddForce(new Vector2(0, 8),ForceMode2D.Impulse);
     }
     public void Move(Vector3 direction)
     {
@@ -47,19 +82,19 @@ public class Lazerwall
 }
 public class LazerWallsRepository : Repository
 {
-    public List<Lazerwall> lazers;
+    public List<Lazerwall_clone> lazers;
     public LazerWallsRepository()
     {
-        lazers = new List<Lazerwall>();
+        lazers = new List<Lazerwall_clone>();
     }
 
 }
 public class LazerWallsInteractor : Interactor
 {
     LazerWallsRepository repository;
-    public void Creat(Vector2 center, int length,Color color)
+    public void Creat(Vector2 center, int length,Color_state color)
     {
-        repository.lazers.Add( new Lazerwall(center, length, color));
+        repository.lazers.Add( new Lazerwall_clone(center, length, color));
     }
     public override void Initialize()
     {
