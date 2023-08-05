@@ -26,9 +26,10 @@ public class PlayerRepocitory:Repository
     public GameObject player { get; set; }
     public GameObject shield { get; set; }
     public CircleCollider2D ccPlayer { get; set; }
-
+    public int HP { get; set; }
     public override void Initialize() 
     {
+        HP = 3;
         color = Color_state.none;
 
         player = new GameObject();
