@@ -78,7 +78,11 @@ public class PlayerInteractor:Interactor
             myR.color = Color_state.blue;
             myR.srShield.color = Color.blue;
         }
-        else myR.srShield.enabled = false;
+        else
+        {
+            myR.srShield.enabled = false;
+            myR.color = Color_state.none;
+        }
     }
     public void Died()
     {
