@@ -118,10 +118,10 @@ public class TurretsInteractor : Interactor
     {
         turretsRepocitort = Scene_1.s.repositorysBase.GetRepository<TurretsRepocitort>();
     }
-    public IEnumerator SquareAtack()
+    public IEnumerator SquareAtack(float rad, int amount, float rot)
     {
 
-        foreach (Vector3 p in CircleSpawn(4, 3, 0, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position))
+        foreach (Vector3 p in CircleSpawn(rad, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position))
         {
             CreatTurrent(p.x, p.y, Color_state.red);
         }

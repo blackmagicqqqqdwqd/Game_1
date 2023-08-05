@@ -5,14 +5,7 @@ using UnityEngine;
 
 public class CircleSpawns : MonoBehaviour
 {
-    //float radius = 5f;
-    //int spawnsAmount = 10;
-    //float circleRotation = 75.8f;
-    //Vector3 coordinates = new Vector3(-5, 1, 0);
-    void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Space)) { foreach(Vector3 vect in CircleSpawn(5f, 10, 75, new Vector3(-5,1,0))) {Debug.Log(vect); };}
-    }
+  
     public List<Vector3> CircleSpawn(float rad, int amount, float rot, Vector3 coord)
     {
         if (rad > 0 && amount > 0)
