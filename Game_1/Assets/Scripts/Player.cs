@@ -87,9 +87,8 @@ public class PlayerInteractor:Interactor
     }
     public void Died()
     {
-        //Object.Destroy(myR.player);
-        //Object.Destroy(myR.shield);
-        Debug.Log("повреждение");
+        myR.HP -= 1;
+        Scene_1.s.interactorsBase.GetInteractor<HP_UIInteractor>().Set_HP(myR.HP);
     }
 }
 

@@ -8,17 +8,22 @@ using UnityEngine;
 public class Turret : MonoBehaviour
 {
     public Turret_Clone repocitory;
+    bool atack = true;
     float initLength = 0.125f;
     float length = 0.125f;
     public void Atack() => StartCoroutine(ShootPrepare(repocitory.color));
     public void Update()
     {
        
-        if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(repocitory.lr.GetPosition(1)))
+        if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(repocitory.lr.GetPosition(1)) && atack)
         {
             if (repocitory.color != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color)
             {
                 Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Died();
+            }
+            else
+            {
+                atack = false;
             }
 
         }
@@ -26,7 +31,7 @@ public class Turret : MonoBehaviour
     IEnumerator ShootTarget(GameObject target)
     {
 
-        yield return new WaitForSeconds(0.015f);
+        yield return new WaitForSeconds(0.005f);
         repocitory.lr.SetPosition(1, Vector3.Lerp(repocitory.lr.GetPosition(0), target.transform.position, length + initLength / 4));
         length += initLength / 4;
         if (repocitory.anim.GetBool("blue_atack") == true) repocitory.anim.SetBool("blue_atack", false);
@@ -68,7 +73,6 @@ public class Turret : MonoBehaviour
 }
 public class Turret_Clone
 {
-    string name;
     public Color_state color { get; set; }
     public LineRenderer lr;
     public Animator anim;
@@ -78,9 +82,8 @@ public class Turret_Clone
     {
         this.color = color;
         GameObject this_turret = new GameObject();
-        name = this_turret.name;
-        var SR = this_turret.AddComponent<SpriteRenderer>();
-        SR.sprite = Resources.Load<Sprite>("Sprites/ProtectedCircle");
+        SpriteRenderer sr = this_turret.AddComponent<SpriteRenderer>();
+        sr.sprite = Resources.Load<Sprite>("Sprites/ProtectedCircle");
         lr = this_turret.AddComponent<LineRenderer>();
         anim = this_turret.AddComponent<Animator>();
         anim.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Animation/Turret 1");
@@ -88,7 +91,7 @@ public class Turret_Clone
         lr.SetPosition(0, this_turret.transform.position);
         lr.SetPosition(1, this_turret.transform.position);
         lr.sortingOrder = 1;
-        SR.sortingOrder = 2;
+        sr.sortingOrder = 2;
         lr.material = Resources.Load<Material>("Lazer");
         lr.SetWidth(0.25f, 0.25f);
         lr.SetColors(Color.magenta, Color.magenta);
@@ -138,11 +141,10 @@ public class TurretsInteractor : Interactor
                 List<Vector3> SpawnedObjects = new List<Vector3>();
                 for (int i = 1; i <= amount; ++i)
                 {
-                    GameObject go = new GameObject("Spawned" + i);
-                    go.transform.position = new Vector3(coord.x + rad * Mathf.Cos((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), coord.y + rad * Mathf.Sin((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), 0);
-                    go.AddComponent<SpriteRenderer>();
-                    go.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/ProtectedCircle");
-                    SpawnedObjects.Add(go.transform.position);
+                    //GameObject go = new GameObject("Spawned" + i);
+                    var v = new Vector3(coord.x + rad * Mathf.Cos((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), coord.y + rad * Mathf.Sin((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), 0);
+                   
+                    SpawnedObjects.Add(v);
                 }
                 return SpawnedObjects;
             }

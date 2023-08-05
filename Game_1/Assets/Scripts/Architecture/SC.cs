@@ -12,6 +12,7 @@ public class SC : SceneConfig
         CreatInteractor<TurretsInteractor>(InteractorMap);
         CreatInteractor<LazerWallsInteractor>(InteractorMap);
         CreatInteractor<PlayerInteractor>(InteractorMap);
+        CreatInteractor<HP_UIInteractor>(InteractorMap);
         // интеракторы 
         // интеракторы 
         // ...
@@ -24,6 +25,7 @@ public class SC : SceneConfig
         CreatRepocitory<TurretsRepocitort>(RepocitoryMap);
         CreatRepocitory<LazerWallsRepository>(RepocitoryMap);
         CreatRepocitory<PlayerRepocitory>(RepocitoryMap);
+        CreatRepocitory<HP_UIRepocitory>(RepocitoryMap);
         //репозитории
         //репозитории
         //...
