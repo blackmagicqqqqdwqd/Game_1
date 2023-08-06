@@ -89,22 +89,20 @@ public class Rocket : MonoBehaviour
 }
 public class CollisionDetector : MonoBehaviour {
     public Color_state mycolor;
+    public bool statk;
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log(8);
-        Debug.Log(collision.gameObject.name);
         if (collision.gameObject == Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().shield)
         {
 
-          
-            if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color != mycolor)
+            if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color != mycolor && statk == false)
             {
                 
                 StartCoroutine(Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag());
-               
+                statk = true;
             }
-            Destroy(gameObject);
-
+            //Destroy(gameObject);
+            //gameObject(false);
         }  
     }
 }

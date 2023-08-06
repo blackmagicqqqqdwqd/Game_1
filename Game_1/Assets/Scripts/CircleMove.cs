@@ -28,11 +28,11 @@ public class CircleMove : MonoBehaviour
         //if()
     }
     public Vector3 Move(Vector2 start, float angle, float rad)
-    {
-        return  new Vector3(rad * Mathf.Cos(Mathf.Deg2Rad * angle) + start .x, rad * Mathf.Sin(Mathf.Deg2Rad * angle) + start.y, 0);
-    }
-    public GameObject Creat()
-    {
+        {
+            return  new Vector3(rad * Mathf.Cos(Mathf.Deg2Rad * angle) + start .x, rad * Mathf.Sin(Mathf.Deg2Rad * angle) + start.y, 0);
+        }
+        public GameObject Creat()
+        {
         GameObject go = new GameObject();
         go.AddComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Shield");
         return go;

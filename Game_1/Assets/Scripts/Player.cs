@@ -87,6 +87,7 @@ public class PlayerInteractor:Interactor
             myR.color = Color_state.none;
         }
     }
+  
     public IEnumerator Get_Damag()
     {
         if (myR.invulnerable == false)
@@ -95,17 +96,18 @@ public class PlayerInteractor:Interactor
             myR.invulnerable = true;
             myR.HP -= 1;
             if (myR.HP == 0) Died();
-            Debug.Log('a');
+           // Debug.Log(myR.srPlayer.color);
             Scene_1.s.interactorsBase.GetInteractor<HP_UIInteractor>().Set_HP(myR.HP);
             yield return new WaitForSeconds(1);
             myR.srPlayer.color = Color.white;
+            Debug.Log(myR.srPlayer.color);
             myR.invulnerable = false;
         }
 
     }
     public void Died()
     {
-        Debug.Log(1);
+       
         //GameObject.Find("Slave_window").SetActive(true);
 
     }
