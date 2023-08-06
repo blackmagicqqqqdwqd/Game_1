@@ -95,6 +95,7 @@ public class PlayerInteractor:Interactor
             myR.invulnerable = true;
             myR.HP -= 1;
             if (myR.HP == 0) Died();
+            Debug.Log('a');
             Scene_1.s.interactorsBase.GetInteractor<HP_UIInteractor>().Set_HP(myR.HP);
             yield return new WaitForSeconds(1);
             myR.srPlayer.color = Color.white;
@@ -104,7 +105,8 @@ public class PlayerInteractor:Interactor
     }
     public void Died()
     {
-        if (GameObject.Find("Слейвс_окно") != null) GameObject.Find("Слейвс_окно").SetActive(true);
+        Debug.Log(1);
+        //GameObject.Find("Slave_window").SetActive(true);
 
     }
     

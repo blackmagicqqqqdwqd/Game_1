@@ -152,7 +152,18 @@ public class TurretsInteractor : Interactor
             else return null;
         }
         //GameObject player = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player;
+        
+    }
 
+    public void Clear()
+    {
+        
+    }
+    public void DestroyTurren(Turret_Clone turret)
+    {
+        //Debug.Log(turret.this_turret.transform.position);
+        turret.this_turret.SetActive(false);
+        turretsRepocitort.turrets.Remove(turret);
     }
 }
 
