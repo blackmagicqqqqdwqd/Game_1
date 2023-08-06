@@ -9,28 +9,14 @@ public class HP_UI : MonoBehaviour
 {
    
 }
-public class HP_UIRepocitory:Repository
+public class HP_UIRepocitory : Repository
 {
-    public List<GameObject> Images {  get; set; }
+    public List<GameObject> Images { get; set; }
+    public Vector3 start_point { get; set; }
     public override void Initialize()
     {
-        Vector3 start_point = new Vector3(-4.44f, 4.4f, 0);
+        start_point = new Vector3(-4.44f, 4.4f, 0);
         Images = new List<GameObject>();
-        for (int i = 0; i < 3; i++) 
-        {
-            GameObject go = new GameObject();
-            go.transform.SetParent(GameObject.Find("Canvas").transform);
-            Image image = go.AddComponent<UnityEngine.UI.Image>();
-            go.GetComponent<RectTransform>().sizeDelta = new Vector2(1,1);
-            image.sprite = Resources.Load<Sprite>("Sprites/Heart");
-            Images.Add(go);
-           if (i == 0) go.transform.position = start_point;
-           else
-           {
-                go.transform.position = start_point + new Vector3(go.GetComponent<RectTransform>().sizeDelta.x* i , 0, 0); ;
-           }
-           
-        }
     }
 }
 public class HP_UIInteractor:Interactor
@@ -43,6 +29,24 @@ public class HP_UIInteractor:Interactor
     public void Get_Hp()
     {
 
+    }
+    public void Show_HP()
+    {
+        for (int i = 0; i < Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory >().HP; i++)
+        {
+            GameObject go = new GameObject();
+            go.transform.SetParent(GameObject.Find("Canvas").transform);
+            Image image = go.AddComponent<UnityEngine.UI.Image>();
+            go.GetComponent<RectTransform>().sizeDelta = new Vector2(1, 1);
+            image.sprite = Resources.Load<Sprite>("Sprites/Heart");
+            repocitory.Images.Add(go);
+            if (i == 0) go.transform.position = repocitory.start_point;
+            else
+            {
+                go.transform.position = repocitory.start_point + new Vector3(go.GetComponent<RectTransform>().sizeDelta.x * i, 0, 0); ;
+            }
+
+        }
     }
     public void Set_HP(int x) 
     {

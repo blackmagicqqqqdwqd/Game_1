@@ -17,6 +17,7 @@ public class Scene_1 : MonoBehaviour
     {
         //s.interactorsBase.GetInteractor<TurretsRepocitort>();
         StartCoroutine(s.interactorsBase.GetInteractor<TurretsInteractor>().SquareAtack(3,4,0));
+        s.interactorsBase.GetInteractor<HP_UIInteractor>().Show_HP();
         //s.interactorsBase.GetInteractor<HP_UIInteractor>().Set_HP(0);
         //s.interactorsBase.GetInteractor<LazerWallsInteractor>().Creat(new Vector2(0, -10), 10, Color_state.red); ;
     }

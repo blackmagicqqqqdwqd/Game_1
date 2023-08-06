@@ -16,7 +16,7 @@ public class Lazerwall : MonoBehaviour
         {
             if (lazerwall.Color != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color)
             {
-                Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Died();
+                StartCoroutine(Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag());
             }
 
 

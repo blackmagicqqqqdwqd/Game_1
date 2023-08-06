@@ -8,6 +8,7 @@ using UnityEngine;
 public class Turret : MonoBehaviour
 {
     public Turret_Clone repocitory;
+    public Turret_Clone previous;
     bool atack = true;
     float initLength = 0.125f;
     float length = 0.125f;
@@ -19,7 +20,7 @@ public class Turret : MonoBehaviour
         {
             if (repocitory.color != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color)
             {
-                Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Died();
+                StartCoroutine(Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag());
             }
             else
             {
@@ -36,7 +37,7 @@ public class Turret : MonoBehaviour
         length += initLength / 4;
         if (repocitory.anim.GetBool("blue_atack") == true) repocitory.anim.SetBool("blue_atack", false);
         else if (repocitory.anim.GetBool("red_atack") == true) repocitory.anim.SetBool("red_atack", false);
-        if (repocitory.lr.GetPosition(1) != target.transform.position) { Debug.Log("2"); StartCoroutine(ShootTarget(target)); }
+        if (repocitory.lr.GetPosition(1) != target.transform.position) { StartCoroutine(ShootTarget(target)); }
         else
         {
             yield return new WaitForSeconds(0.25f);
@@ -123,6 +124,7 @@ public class TurretsInteractor : Interactor
     }
     public IEnumerator SquareAtack(float rad, int amount, float rot)
     {
+        var len = 2 * Math.PI * rad / amount;
 
         foreach (Vector3 p in CircleSpawn(rad, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position))
         {
@@ -141,9 +143,8 @@ public class TurretsInteractor : Interactor
                 List<Vector3> SpawnedObjects = new List<Vector3>();
                 for (int i = 1; i <= amount; ++i)
                 {
-                    //GameObject go = new GameObject("Spawned" + i);
                     var v = new Vector3(coord.x + rad * Mathf.Cos((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), coord.y + rad * Mathf.Sin((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), 0);
-                   
+  
                     SpawnedObjects.Add(v);
                 }
                 return SpawnedObjects;

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -20,20 +21,17 @@ public enum Color_state
 }
 public class PlayerRepocitory:Repository
 {
-    public bool invulnerable = false;
+    public bool invulnerable { get; set; }
     public Color_state color { get; set; }
     public SpriteRenderer srPlayer { get; set; }
     public SpriteRenderer srShield { get; set; }
     public GameObject player { get; set; }
     public GameObject shield { get; set; }
     public CircleCollider2D ccPlayer { get; set; }
-    public int HP 
-    { 
-        get; set; 
-    }
+    public int HP {    get; set;}
     public override void Initialize() 
     {
-        HP = 3;
+        HP = 4;
         color = Color_state.none;
 
         player = new GameObject();
@@ -89,15 +87,29 @@ public class PlayerInteractor:Interactor
             myR.color = Color_state.none;
         }
     }
+    public IEnumerator Get_Damag()
+    {
+        if (myR.invulnerable == false)
+        {
+            myR.srPlayer.color = Color.green;
+            myR.invulnerable = true;
+            myR.HP -= 1;
+            if (myR.HP == 0) Died();
+            Scene_1.s.interactorsBase.GetInteractor<HP_UIInteractor>().Set_HP(myR.HP);
+            yield return new WaitForSeconds(1);
+            myR.srPlayer.color = Color.white;
+            myR.invulnerable = false;
+        }
+
+    }
     public void Died()
     {
-        myR.HP -= 1;
-        Scene_1.s.interactorsBase.GetInteractor<HP_UIInteractor>().Set_HP(myR.HP);
+        if (GameObject.Find("Слейвс_окно") != null) GameObject.Find("Слейвс_окно").SetActive(true);
+
     }
-    public IEnumerable Invulnerable()
-    {
-        yield return new WaitForSeconds(1);
-    }
+    
+    
+    
 }
 
 
