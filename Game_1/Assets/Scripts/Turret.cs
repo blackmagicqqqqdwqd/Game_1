@@ -8,7 +8,7 @@ using UnityEngine;
 public class Turret : MonoBehaviour
 {
     public Turret_Clone repocitory;
-    public Turret_Clone previous;
+    //public Turret_Clone previous;
     bool atack = true;
     float initLength = 0.125f;
     float length = 0.125f;
@@ -20,7 +20,7 @@ public class Turret : MonoBehaviour
         {
             if (repocitory.color != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color)
             {
-                StartCoroutine(Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag());
+                Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();
             }
             else
             {
@@ -81,23 +81,50 @@ public class Turret_Clone
     public Turret turretScript;
     public Turret_Clone(float x, float y, Color_state color)
     {
+      
         this.color = color;
-        GameObject this_turret = new GameObject();
+
+        this_turret = new GameObject();
+        this_turret.transform.position = new Vector3(x, y, 0);
+
         SpriteRenderer sr = this_turret.AddComponent<SpriteRenderer>();
         sr.sprite = Resources.Load<Sprite>("Sprites/ProtectedCircle");
-        lr = this_turret.AddComponent<LineRenderer>();
-        anim = this_turret.AddComponent<Animator>();
-        anim.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Animation/Turret 1");
-        this_turret.transform.position = new Vector3(x, y, 0);
-        lr.SetPosition(0, this_turret.transform.position);
-        lr.SetPosition(1, this_turret.transform.position);
-        lr.sortingOrder = 1;
         sr.sortingOrder = 2;
-        lr.material = Resources.Load<Material>("Lazer");
-        lr.SetWidth(0.25f, 0.25f);
-        lr.SetColors(Color.magenta, Color.magenta);
+
         turretScript = this_turret.AddComponent<Turret>();
         turretScript.repocitory = this;
+
+        lr = this_turret.AddComponent<LineRenderer>();
+        lr.sortingOrder = 1;
+        lr.material = Resources.Load<Material>("Lazer");
+        lr.SetWidth(0.25f, 0.25f);
+        //lr.SetColors(Color.magenta, Color.magenta);
+        lr.SetPosition(0, this_turret.transform.position);
+        lr.SetPosition(1, this_turret.transform.position);
+
+        anim = this_turret.AddComponent<Animator>();
+        anim.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Animation/Turret 1");
+
+
+        switch (color)
+        {
+            case Color_state.red:
+                lr.SetColors(Color.red, Color.red);
+                break;
+            case Color_state.blue:
+                lr.SetColors(Color.blue, Color.blue);
+                break;
+            case Color_state.purple:
+                lr.SetColors(Color.magenta, Color.magenta);
+                break;
+            case Color_state.none:
+                lr.SetColors(Color.white, Color.white);
+                break;
+            default:
+                lr.SetColors(Color.red, Color.red);
+                break;
+        }
+
     }
 
 }
@@ -118,11 +145,8 @@ public class TurretsInteractor : Interactor
         turretsRepocitort.turrets.Add(turret);
         return turret;
     }
-    public override void Initialize()
-    {
-        turretsRepocitort = Scene_1.s.repositorysBase.GetRepository<TurretsRepocitort>();
-    }
-    public IEnumerator SquareAtack(float rad, int amount, float rot)
+    public override void Initialize()=> turretsRepocitort = Scene_1.s.repositorysBase.GetRepository<TurretsRepocitort>();
+    public IEnumerator CircleAtack(float rad, int amount, float rot)
     {
         var len = 2 * Math.PI * rad / amount;
 
@@ -154,16 +178,11 @@ public class TurretsInteractor : Interactor
         //GameObject player = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player;
         
     }
-
-    public void Clear()
-    {
-        
-    }
+    public void Clear() => turretsRepocitort.turrets.Clear(); // желательно проверять все ли Gameobject уничтожены
     public void DestroyTurren(Turret_Clone turret)
     {
-        //Debug.Log(turret.this_turret.transform.position);
-        turret.this_turret.SetActive(false);
-        turretsRepocitort.turrets.Remove(turret);
+        GameObject.Destroy(turret.this_turret);
+        // ? уничтожать турель в репозитории
     }
 }
 

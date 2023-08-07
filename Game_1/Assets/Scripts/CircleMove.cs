@@ -27,10 +27,7 @@ public class CircleMove : MonoBehaviour
         // Move(Vector2.zero, 1, 2);
         //if()
     }
-    public Vector3 Move(Vector2 start, float angle, float rad)
-        {
-            return  new Vector3(rad * Mathf.Cos(Mathf.Deg2Rad * angle) + start .x, rad * Mathf.Sin(Mathf.Deg2Rad * angle) + start.y, 0);
-        }
+   
         public GameObject Creat()
         {
         GameObject go = new GameObject();

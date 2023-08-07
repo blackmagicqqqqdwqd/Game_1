@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static Turret;
+using static Turret_Rot;
 
 public class SC : SceneConfig
 {
@@ -13,6 +14,8 @@ public class SC : SceneConfig
         CreatInteractor<LazerWallsInteractor>(InteractorMap);
         CreatInteractor<PlayerInteractor>(InteractorMap);
         CreatInteractor<HP_UIInteractor>(InteractorMap);
+        CreatInteractor<RocketInteractor>(InteractorMap);
+        CreatInteractor<Turret_RotIterator>(InteractorMap);
         // интеракторы 
         // интеракторы 
         // ...
@@ -26,6 +29,8 @@ public class SC : SceneConfig
         CreatRepocitory<LazerWallsRepository>(RepocitoryMap);
         CreatRepocitory<PlayerRepocitory>(RepocitoryMap);
         CreatRepocitory<HP_UIRepocitory>(RepocitoryMap);
+        CreatRepocitory<RocketRepocitory>(RepocitoryMap);
+        CreatRepocitory<Turret_RotRepocitory>(RepocitoryMap);
         //репозитории
         //репозитории
         //...

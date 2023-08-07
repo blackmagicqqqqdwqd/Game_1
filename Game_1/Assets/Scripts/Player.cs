@@ -7,10 +7,18 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    PlayerInteractor playerInteractor;
+    private void Start() => playerInteractor = Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>();
     void Update()
     {
-        Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().ChangeColor(); //?
+        playerInteractor.ChangeColor(); //?
+       
     }
+    public void Inveriable()
+    {
+        StartCoroutine(Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Invulnerable());
+    }
+
 }
 public enum Color_state
 {
@@ -19,7 +27,7 @@ public enum Color_state
     purple,
     none
 }
-public class PlayerRepocitory:Repository
+public class PlayerRepocitory : Repository
 {
     public bool invulnerable { get; set; }
     public Color_state color { get; set; }
@@ -28,19 +36,34 @@ public class PlayerRepocitory:Repository
     public GameObject player { get; set; }
     public GameObject shield { get; set; }
     public CircleCollider2D ccPlayer { get; set; }
-    public int HP {    get; set;}
-    public override void Initialize() 
+    public Player player_sc { get; set; }
+    int hp;
+    public int HP
+    {
+        get
+        { return hp; }
+        set
+        {
+            if (invulnerable == false)
+            {
+                hp = value;
+
+            }
+        }
+
+    }
+    public override void Initialize()
     {
         HP = 4;
         color = Color_state.none;
 
         player = new GameObject();
         srPlayer = player.AddComponent<SpriteRenderer>();
-        ccPlayer =  player.AddComponent<CircleCollider2D>();
+        ccPlayer = player.AddComponent<CircleCollider2D>();
         srPlayer.sprite = Resources.Load<Sprite>("Sprites/ProtectedCircle");
         srPlayer.sortingOrder = 2;
         player.name = "MainCircle";
-        player.AddComponent<Player>();
+        player_sc = player.AddComponent<Player>();
 
         shield = new GameObject();
         srShield = shield.AddComponent<SpriteRenderer>();
@@ -48,18 +71,18 @@ public class PlayerRepocitory:Repository
         srShield.sprite = Resources.Load<Sprite>("Sprites/Shield");
         srShield.sortingOrder = 1;
         shield.name = "Shield";
-        shield.transform.localScale = new Vector2(1.2f,1.2f);   //?
+        shield.transform.localScale = new Vector2(1.2f, 1.2f);   //?
 
         shield.transform.SetParent(player.transform);
     }
 
 }
-public class PlayerInteractor:Interactor
+public class PlayerInteractor : Interactor
 {
-    PlayerRepocitory myR;
+    public PlayerRepocitory myR { get; set; }
     public override void Initialize()
     {
-        myR = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>(); 
+        myR = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>();
     }
     public void ChangeColor()
     {
@@ -87,33 +110,31 @@ public class PlayerInteractor:Interactor
             myR.color = Color_state.none;
         }
     }
-  
-    public IEnumerator Get_Damag()
+
+    public void Get_Damag()
     {
         if (myR.invulnerable == false)
         {
+            myR.HP -= 1;
             myR.srPlayer.color = Color.green;
             myR.invulnerable = true;
-            myR.HP -= 1;
-            if (myR.HP == 0) Died();
-           // Debug.Log(myR.srPlayer.color);
+            myR.player_sc.Inveriable();
             Scene_1.s.interactorsBase.GetInteractor<HP_UIInteractor>().Set_HP(myR.HP);
-            yield return new WaitForSeconds(1);
-            myR.srPlayer.color = Color.white;
-            Debug.Log(myR.srPlayer.color);
-            myR.invulnerable = false;
         }
-
+    }
+    public IEnumerator Invulnerable()
+    {
+        yield return new WaitForSeconds(1);
+        myR.srPlayer.color = Color.white;
+        myR.invulnerable = false;
     }
     public void Died()
     {
-       
         //GameObject.Find("Slave_window").SetActive(true);
-
     }
-    
-    
-    
+
+
+
 }
 
 

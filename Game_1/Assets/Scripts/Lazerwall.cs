@@ -11,18 +11,20 @@ public class Lazerwall : MonoBehaviour
     public Lazerwall_clone lazerwall;
     void Update()
     {
+        Vector3 v = Camera.main.WorldToViewportPoint(transform.position);
+        if (v.x > 1 || v.x < 0 || v.y > 1 || v.y < 0) Destroy(gameObject);
+        //if (Camera.main.WorldToViewportPoint(transform.position).y > 1 )
         lazerwall.Move2(transform.position);
         if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(transform.position))
         {
             if (lazerwall.Color != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color)
             {
-                StartCoroutine(Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag());
+                Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();
             }
 
 
         }
     }
-
 }
 
 public class Lazerwall_clone 
@@ -101,6 +103,11 @@ public class LazerWallsInteractor : Interactor
     {
         repository = Scene_1.s.repositorysBase.GetRepository <LazerWallsRepository>();
     }
+    public void Destroy(Lazerwall_clone lazerwall)
+    {
+        repository.lazers.Remove(lazerwall);
+    }
+    public void Clear() => repository.lazers.Clear();
 }
 
 

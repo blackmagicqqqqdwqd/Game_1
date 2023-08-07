@@ -56,7 +56,6 @@ public class Rocket : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.V) == true) {
-            Debug.Log(1);
             switch (Random.Range(0, 8))
             {
                 case 0:
@@ -98,11 +97,20 @@ public class CollisionDetector : MonoBehaviour {
             if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color != mycolor && statk == false)
             {
                 
-                StartCoroutine(Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag());
+                Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();
                 statk = true;
             }
-            //Destroy(gameObject);
+            Destroy(gameObject);
             //gameObject(false);
         }  
     }
+}
+
+public class RocketRepocitory : Repository
+{
+
+}
+public class RocketInteractor: Interactor
+{
+
 }
