@@ -13,7 +13,6 @@ public class Lazerwall : MonoBehaviour
     {
         Vector3 v = Camera.main.WorldToViewportPoint(transform.position);
         if (v.x > 1 || v.x < 0 || v.y > 1 || v.y < 0) Destroy(gameObject);
-        //if (Camera.main.WorldToViewportPoint(transform.position).y > 1 )
         lazerwall.Move2(transform.position);
         if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(transform.position))
         {

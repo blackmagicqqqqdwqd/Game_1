@@ -15,7 +15,6 @@ public class CircleMove : MonoBehaviour
         game = Creat();
     }
 
-    // Update is called once per frame
     void Update()
     {
         game.transform.position =  Vector3.MoveTowards(game.transform.position,GameObject.Find("Point").transform.position, 1 * Time.deltaTime);

@@ -17,9 +17,9 @@ public class Scene_1 : MonoBehaviour
     }
     private void Start()
     {
-        StartCoroutine(LazerWallsAtack());
+        //StartCoroutine(LazerWallsAtack());
         
-       // s.interactorsBase.GetInteractor<Turret_RotIterator>().Creat_Turret_Rot(-4, - 14,Color_state.red   );
+        s.interactorsBase.GetInteractor<Turret_RotIterator>().Creat_Turret_Rot(-4, - 14,Color_state.red   );
       
         s.interactorsBase.GetInteractor<HP_UIInteractor>().Show_HP();
         //s.interactorsBase.GetInteractor<HP_UIInteractor>().Set_HP(0);
