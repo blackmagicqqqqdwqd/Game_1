@@ -20,13 +20,7 @@ public class Player : MonoBehaviour
     }
 
 }
-public enum Color_state
-{
-    red,
-    blue,
-    purple,
-    none
-}
+
 public class PlayerRepocitory : Repository
 {
     public bool invulnerable { get; set; }
@@ -86,19 +80,19 @@ public class PlayerInteractor : Interactor
     }
     public void ChangeColor()
     {
-        if (Input.GetKey(KeyCode.Alpha1) && Input.GetKey(KeyCode.Alpha2))
+        if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D))
         {
             myR.srShield.enabled = true;
             myR.color = Color_state.purple;
             myR.srShield.color = Color.magenta;
         }
-        else if (Input.GetKey(KeyCode.Alpha1))
+        else if (Input.GetKey(KeyCode.A))
         {
             myR.srShield.enabled = true;
             myR.color = Color_state.red;
             myR.srShield.color = Color.red;
         }
-        else if (Input.GetKey(KeyCode.Alpha2))
+        else if (Input.GetKey(KeyCode.D))
         {
             myR.srShield.enabled = true;
             myR.color = Color_state.blue;

@@ -33,8 +33,13 @@ public class Lazerwall_clone
     int wight;
     public Rigidbody2D rb; 
     LineRenderer lr;
-    public Lazerwall_clone(Vector2 center, int length, Color_state color)
+    public Lazerwall_clone(Vector2 center, int length , Vector2 speed, Color_state color = Color_state.random)
     {
+
+        if (color == Color_state.random)
+        {
+            color = (Color_state)Random.Range(1,4);
+        }
         this.Color = color;
         wight = length;
         This_lazer = new GameObject();
@@ -68,7 +73,7 @@ public class Lazerwall_clone
         rb.gravityScale = 0f;
         var lm = rb.AddComponent<Lazerwall>();
         lm.lazerwall = this;
-        rb.AddForce(new Vector2(0, 8),ForceMode2D.Impulse);
+        rb.AddForce(new Vector2(0, Random.Range(speed.x,speed.y)),ForceMode2D.Impulse);
     }
     public void Move(Vector3 direction)
     {
@@ -94,9 +99,9 @@ public class LazerWallsRepository : Repository
 public class LazerWallsInteractor : Interactor
 {
     LazerWallsRepository repository;
-    public void Creat(Vector2 center, int length,Color_state color)
+    public void Creat(Vector2 center, int length , Vector2 speed ,Color_state color)
     {
-        repository.lazers.Add( new Lazerwall_clone(center, length, color));
+        repository.lazers.Add( new Lazerwall_clone(center, length, speed,  color));
     }
     public override void Initialize()
     {

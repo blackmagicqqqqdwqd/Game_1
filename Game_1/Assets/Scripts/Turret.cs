@@ -1,22 +1,40 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
-
+using UnityEngine.PlayerLoop;
 
 public class Turret : MonoBehaviour
 {
+    enum State
+    {
+        atack,
+        move_on_atack_zone,
+        move_on_spawn_zone,
+        wait
+    }
+    State state = State.move_on_atack_zone;
     public Turret_Clone repocitory;
-    //public Turret_Clone previous;
+    public bool move_on_position = true;
+    public Vector3 Spawn_position;
+    public Vector3 atack_position;
+    float move_speed = 6;
+
     bool atack = true;
     float initLength = 0.125f;
     float length = 0.125f;
     public void Atack() => StartCoroutine(ShootPrepare(repocitory.color));
     public void Update()
     {
-       
-        if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(repocitory.lr.GetPosition(1)) && atack)
+        if (((transform.position - atack_position).magnitude != 0 ) && move_on_position)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, atack_position, move_speed * Time.deltaTime);
+        }
+        else move_on_position = false;
+
+        if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(repocitory.lr.GetPosition(1)) && atack &&   move_on_position == false)
         {
             if (repocitory.color != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color)
             {
@@ -33,6 +51,7 @@ public class Turret : MonoBehaviour
     {
 
         yield return new WaitForSeconds(0.005f);
+        repocitory.lr.SetPosition(0, transform.position);
         repocitory.lr.SetPosition(1, Vector3.Lerp(repocitory.lr.GetPosition(0), target.transform.position, length + initLength / 4));
         length += initLength / 4;
         if (repocitory.anim.GetBool("blue_atack") == true) repocitory.anim.SetBool("blue_atack", false);
@@ -48,7 +67,7 @@ public class Turret : MonoBehaviour
 
 
     }
-
+   
     IEnumerator ShootPrepare(Color_state color)
 
     {
@@ -79,9 +98,12 @@ public class Turret_Clone
     public Animator anim;
     public GameObject this_turret;
     public Turret turretScript;
-    public Turret_Clone(float x, float y, Color_state color)
+    public Turret_Clone(float x, float y, Color_state color = Color_state.random)
     {
-      
+        if (color == Color_state.random)
+        {
+            color = (Color_state) UnityEngine.Random.Range(1, 4);
+        }
         this.color = color;
 
         this_turret = new GameObject();
@@ -98,7 +120,6 @@ public class Turret_Clone
         lr.sortingOrder = 1;
         lr.material = Resources.Load<Material>("Lazer");
         lr.SetWidth(0.25f, 0.25f);
-        //lr.SetColors(Color.magenta, Color.magenta);
         lr.SetPosition(0, this_turret.transform.position);
         lr.SetPosition(1, this_turret.transform.position);
 
@@ -149,15 +170,28 @@ public class TurretsInteractor : Interactor
     public IEnumerator CircleAtack(float rad, int amount, float rot)
     {
         var len = 2 * Math.PI * rad / amount;
-
-        foreach (Vector3 p in CircleSpawn(rad, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position))
-        {
-            CreatTurrent(p.x, p.y, Color_state.red);
+        var vv1 = CircleSpawn(rad, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position);
+        var vv2 = CircleSpawn(rad + 8, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position);
+        for (int i = 0; i < vv1.Count; i++) {
+            CreatTurrent(vv2[i].x, vv2[i].y, Color_state.random).turretScript.atack_position = vv1[i];
         }
+
+        for (int i = turretsRepocitort.turrets.Count - 1; i >= 1; i--)
+        {
+            int j = UnityEngine.Random.Range(1, i + 1);
+            var temp = turretsRepocitort.turrets[j];
+            turretsRepocitort.turrets[j] = turretsRepocitort.turrets[i];
+            turretsRepocitort.turrets[i] = temp;
+        }
+
         foreach (var v in turretsRepocitort.turrets )
         {
             yield return new WaitForSeconds(2);
             v.turretScript.Atack();
+            if (v == turretsRepocitort.turrets[turretsRepocitort.turrets.Count- 1])
+            {
+
+            }
         }
 
          List<Vector3> CircleSpawn(float rad, int amount, float rot, Vector3 coord)
@@ -184,5 +218,6 @@ public class TurretsInteractor : Interactor
         GameObject.Destroy(turret.this_turret);
         // ? уничтожать турель в репозитории
     }
+
 }
 

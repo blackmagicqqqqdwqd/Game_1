@@ -9,3 +9,11 @@ public interface IHavePause
     public void Deactivate();
  
 }
+public enum Color_state
+{
+    red = 1,
+    blue,
+    purple,
+    none,
+    random
+}
