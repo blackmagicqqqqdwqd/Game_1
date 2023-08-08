@@ -11,7 +11,7 @@ public class Rocket : MonoBehaviour
     Vector3 playerPos;
     public void Start()
     {
-         playerPos = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position;
+         playerPos = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position; 
     }
     Vector3 point;
     public Color_state cl = Color_state.none;
