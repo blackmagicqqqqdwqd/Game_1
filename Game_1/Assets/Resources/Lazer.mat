@@ -50,8 +50,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _LaserEdgeSmoothness: 14.74
-    - _LaserFitness: 9364.6
+    - _LaserEdgeSmoothness: 50
+    - _LaserFitness: 9369.8
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:

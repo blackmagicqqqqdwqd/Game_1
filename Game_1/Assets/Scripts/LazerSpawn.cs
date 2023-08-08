@@ -45,36 +45,31 @@ public class LazerSpawn : MonoBehaviour
         var meshFilter = This_laser.AddComponent<MeshFilter>();
         Mesh mesh = new Mesh();
         lr.BakeMesh(mesh);
-        meshFilter.sharedMesh = mesh;
-
+        meshFilter.sharedMesh = mesh;        
         var meshRenderer = This_laser.AddComponent<MeshRenderer>();
         meshRenderer.sharedMaterial = Resources.Load<Material>("Lazer");
         meshRenderer.sortingOrder = 1;
-        //rb = This_laser.AddComponent<Rigidbody2D>();
-        //rb.gravityScale = 0f;
-
         GameObject.Destroy(lr);
         StartCoroutine(IsOutOfBounds(This_laser));
-       // StartCoroutine(PlayerCheck(This_laser));
+        StartCoroutine(PlayerCheck(This_laser,Color));
 
     }  
     IEnumerator IsOutOfBounds(GameObject laser)
     {
-        yield return new WaitForSeconds(5);
-        if (transform.TransformPoint(laser.transform.position).y > 50) Destroy(laser);
+        yield return new WaitForSeconds(0.05f);
+        if (Input.GetKeyDown(KeyCode.C)) Debug.Log(laser.transform.position);
+        if (transform.TransformPoint(laser.transform.position).y > 30) Destroy(laser);
         else StartCoroutine(IsOutOfBounds(laser));
     }
-   /* IEnumerator PlayerCheck(GameObject laser)
+    IEnumerator PlayerCheck(GameObject laser,Color_state color)
     {
-        yield return new WaitForSeconds(0.5f);
-        if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(laser.transform.position))
+        yield return new WaitForSeconds(0.025f);
+        if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().shield.GetComponent<CircleCollider2D>().OverlapPoint(laser.GetComponent<MeshRenderer>().bounds.center))
         {
-            if (laser.Color != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color)
-            {
-                Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();
-            }
+            if (color != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color) Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();
         }
-    }*/
+        StartCoroutine(PlayerCheck(laser, color));
+    }
 
     void Update()
     {
