@@ -50,10 +50,19 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+<<<<<<< Updated upstream
     - _LaserEdgeSmoothness: 50
     - _LaserFitness: 9369.8
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+=======
+    - _LaserEdgeSmoothness: 23.5
+    - _LaserFitness: 11195.2
+    - _QueueControl: 0
+    - _QueueOffset: 0
+    m_Colors:
+    - _Color: {r: 0.743393, g: 1, b: 0.12641507, a: 1}
+>>>>>>> Stashed changes
   m_BuildTextureStacks: []

@@ -71,3 +71,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 Game_1/Assets/Scenes/Main.unity
+Game_1/Assets/Scenes/Main.unity
+Game_1/Assets/Resources/Lazer.mat
