@@ -54,7 +54,8 @@ public class Turret : MonoBehaviour
         repocitory.lr.SetPosition(0, transform.position);
         repocitory.lr.SetPosition(1, Vector3.Lerp(repocitory.lr.GetPosition(0), target.transform.position, length + initLength / 4));
         length += initLength / 4;
-        if (repocitory.anim.GetBool("blue_atack") == true) repocitory.anim.SetBool("blue_atack", false);
+        if (repocitory.anim.GetBool("magenta_atack") == true) repocitory.anim.SetBool("magenta_atack", false);
+        else if (repocitory.anim.GetBool("blue_atack") == true) repocitory.anim.SetBool("blue_atack", false);
         else if (repocitory.anim.GetBool("red_atack") == true) repocitory.anim.SetBool("red_atack", false);
         if (repocitory.lr.GetPosition(1) != target.transform.position) { StartCoroutine(ShootTarget(target)); }
         else
@@ -71,7 +72,14 @@ public class Turret : MonoBehaviour
     IEnumerator ShootPrepare(Color_state color)
 
     {
-        if (color == Color_state.blue)
+        if (color == Color_state.purple)
+        {
+            repocitory.lr.startColor = Color.magenta;
+            repocitory.lr.endColor = Color.magenta;
+            repocitory.anim.SetBool("magenta_atack", true);
+            repocitory.anim.SetBool("idle", false);
+        }
+        else if (color == Color_state.blue)
         {
             repocitory.lr.startColor = Color.blue;
             repocitory.lr.endColor = Color.blue;
@@ -85,7 +93,7 @@ public class Turret : MonoBehaviour
             repocitory.lr.endColor = Color.red;
             repocitory.anim.SetBool("red_atack", true);
             repocitory.anim.SetBool("idle", false);
-        }
+        }        
         yield return new WaitForSeconds(2.05f);
         StartCoroutine(ShootTarget(Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player));
     }
@@ -119,7 +127,8 @@ public class Turret_Clone
         lr = this_turret.AddComponent<LineRenderer>();
         lr.sortingOrder = 1;
         lr.material = Resources.Load<Material>("Lazer");
-        lr.SetWidth(0.25f, 0.25f);
+        lr.startWidth = 0.25f;
+        lr.endWidth = 0.25f;
         lr.SetPosition(0, this_turret.transform.position);
         lr.SetPosition(1, this_turret.transform.position);
 
@@ -130,24 +139,27 @@ public class Turret_Clone
         switch (color)
         {
             case Color_state.red:
-                lr.SetColors(Color.red, Color.red);
+                lr.startColor = UnityEngine.Color.red;
+                lr.endColor = UnityEngine.Color.red;
                 break;
             case Color_state.blue:
-                lr.SetColors(Color.blue, Color.blue);
+                lr.startColor = UnityEngine.Color.blue;
+                lr.endColor = UnityEngine.Color.blue;
                 break;
             case Color_state.purple:
-                lr.SetColors(Color.magenta, Color.magenta);
+                lr.startColor = UnityEngine.Color.magenta;
+                lr.endColor = UnityEngine.Color.magenta;
                 break;
             case Color_state.none:
-                lr.SetColors(Color.white, Color.white);
+                lr.startColor = UnityEngine.Color.white;
+                lr.endColor = UnityEngine.Color.white;
                 break;
             default:
-                lr.SetColors(Color.red, Color.red);
+                lr.startColor = UnityEngine.Color.black;
+                lr.endColor = UnityEngine.Color.black;
                 break;
         }
-
     }
-
 }
 public class TurretsRepocitort : Repository
 {

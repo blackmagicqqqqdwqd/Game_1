@@ -114,6 +114,7 @@ public class PlayerInteractor : Interactor
             myR.invulnerable = true;
             myR.player_sc.Inveriable();
             Scene_1.s.interactorsBase.GetInteractor<HP_UIInteractor>().Set_HP(myR.HP);
+            if (myR.HP == 0) Died();
         }
     }
     public IEnumerator Invulnerable()
@@ -124,6 +125,7 @@ public class PlayerInteractor : Interactor
     }
     public void Died()
     {
+        Scene_1.s.interactorsBase.GetInteractor<GAMEOVER_UIInteractor>().Show_goscreen();
         //GameObject.Find("Slave_window").SetActive(true);
     }
 

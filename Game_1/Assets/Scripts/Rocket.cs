@@ -15,7 +15,7 @@ public class Rocket : MonoBehaviour
     }
     Vector3 point;
     public Color_state cl = Color_state.none;
-    public void rocketClone(float x, float y, Color_state color)
+    public Rocket(float x, float y, Color_state color)
     {
 
         GameObject this_rocket = new GameObject("SomeRocket");
@@ -59,28 +59,28 @@ public class Rocket : MonoBehaviour
             switch (Random.Range(0, 8))
             {
                 case 0:
-                    rocketClone(playerPos.x - 10, playerPos.y - 10, Color_state.red);
+                    Rocket rocket = new (playerPos.x - 10, playerPos.y - 10, Color_state.red);
                     break;
                 case 1:
-                    rocketClone(playerPos.x - 10, playerPos.y + 10, Color_state.red);
+                    Rocket rocket1 = new(playerPos.x - 10, playerPos.y + 10, Color_state.red);
                     break;
                 case 2:
-                    rocketClone(playerPos.x + 10, playerPos.y + 10, Color_state.red);
+                    Rocket rocket2 = new(playerPos.x + 10, playerPos.y + 10, Color_state.red);
                     break;
                 case 3:
-                    rocketClone(playerPos.x + 10, playerPos.y - 10, Color_state.red);
+                    Rocket rocket3 = new(playerPos.x + 10, playerPos.y - 10, Color_state.red);
                     break;
                 case 4:
-                    rocketClone(playerPos.x - 7, playerPos.y - 8, Color_state.red);
+                    Rocket rocket4 = new(playerPos.x - 7, playerPos.y - 8, Color_state.red);
                     break;
                 case 5:
-                    rocketClone(playerPos.x - 9, playerPos.y + 6, Color_state.red);
+                    Rocket rocket5 = new(playerPos.x - 9, playerPos.y + 6, Color_state.red);
                     break;
                 case 6:
-                    rocketClone(playerPos.x + 5, playerPos.y + 7, Color_state.red);
+                    Rocket rocket6 = new(playerPos.x + 5, playerPos.y + 7, Color_state.red);
                     break;
                 case 7:
-                    rocketClone(playerPos.x + 8, playerPos.y - 7, Color_state.red);
+                    Rocket rocket7 = new(playerPos.x + 8, playerPos.y - 7, Color_state.red);
                     break;
             }
         }
@@ -108,9 +108,20 @@ public class CollisionDetector : MonoBehaviour {
 
 public class RocketRepocitory : Repository
 {
-
+    public List<Rocket> rockets;
+    public override void Initialize()
+    {
+        rockets = new List<Rocket>();
+    }
 }
 public class RocketInteractor: Interactor
 {
-
+    RocketRepocitory rocketRepocitory;
+    public Rocket CreateRocket(float x, float y, Color_state color)
+    {
+        Rocket rocket = new Rocket(x, y, color);
+        rocketRepocitory.rockets.Add(rocket);
+        return rocket;
+    }
+    public override void Initialize() => rocketRepocitory = Scene_1.s.repositorysBase.GetRepository<RocketRepocitory>();
 }

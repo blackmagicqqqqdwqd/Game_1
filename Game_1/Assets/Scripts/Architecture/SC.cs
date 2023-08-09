@@ -16,6 +16,7 @@ public class SC : SceneConfig
         CreatInteractor<HP_UIInteractor>(InteractorMap);
         CreatInteractor<RocketInteractor>(InteractorMap);
         CreatInteractor<Turret_RotIterator>(InteractorMap);
+        CreatInteractor<GAMEOVER_UIInteractor>(InteractorMap);
         // интеракторы 
         // интеракторы 
         // ...
@@ -31,6 +32,7 @@ public class SC : SceneConfig
         CreatRepocitory<HP_UIRepocitory>(RepocitoryMap);
         CreatRepocitory<RocketRepocitory>(RepocitoryMap);
         CreatRepocitory<Turret_RotRepocitory>(RepocitoryMap);
+        CreatRepocitory<GAMEOVER_UIRepocitory>(RepocitoryMap);
         //репозитории
         //репозитории
         //...
