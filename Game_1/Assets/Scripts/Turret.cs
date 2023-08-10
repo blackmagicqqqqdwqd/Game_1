@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
+using static TurretsInteractor;
 
 public class Turret : MonoBehaviour
 {
@@ -17,39 +18,69 @@ public class Turret : MonoBehaviour
     }
     State state = State.move_on_atack_zone;
     public Turret_Clone repocitory;
-    public bool move_on_position = true;
+   
     public Vector3 Spawn_position;
     public Vector3 atack_position;
     float move_speed = 6;
 
-    bool atack = true;
+    
     float initLength = 0.125f;
     float length = 0.125f;
-    public void Atack() => StartCoroutine(ShootPrepare(repocitory.color));
+    public void Atack()
+    {
+        repocitory.lr.SetPosition(0, transform.position);
+        transform.parent.GetComponent<Turret_controller>().atack = true;
+        Debug.Log(state );
+        Vector3 target = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position;
+       // StartCoroutine(ShootPrepare(repocitory.color));
+        if ((repocitory.lr.GetPosition(1) - target).magnitude != 0)
+            repocitory.lr.SetPosition(1, Vector3.MoveTowards(repocitory.lr.GetPosition(1), target, 4* Time.deltaTime));
+        else transform.parent.GetComponent<Turret_controller>().atack = false;
+
+        Debug.Log(state);
+    }
+    public bool Atack2()
+    {
+      if (state == State.wait)
+        {
+            state = State.atack;
+            return true;
+        }
+      return false;
+
+    }
     public void Update()
     {
-        if (((transform.position - atack_position).magnitude != 0 ) && move_on_position)
+        Debug.Log(state);
+        if (state == State.atack)
+        {
+            Atack();
+            
+        }
+
+        if (((transform.position - atack_position).magnitude != 0) && state == State.move_on_atack_zone)
         {
             transform.position = Vector3.MoveTowards(transform.position, atack_position, move_speed * Time.deltaTime);
         }
-        else move_on_position = false;
+        else if (((transform.position - atack_position).magnitude == 0 && state == State.move_on_atack_zone)) state = State.wait;
 
-        if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(repocitory.lr.GetPosition(1)) && atack &&   move_on_position == false)
+
+            if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(repocitory.lr.GetPosition(1)) && state ==State.atack)
         {
             if (repocitory.color != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color)
             {
                 Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();
+                state = State.wait;
+                transform.parent.GetComponent<Turret_controller>().atack = false;
             }
-            else
-            {
-                atack = false;
-            }
-
+            else state = State.wait;
+            transform.parent.GetComponent<Turret_controller>().atack = false;
         }
+    
     }
     IEnumerator ShootTarget(GameObject target)
     {
-
+      
         yield return new WaitForSeconds(0.005f);
         repocitory.lr.SetPosition(0, transform.position);
         repocitory.lr.SetPosition(1, Vector3.Lerp(repocitory.lr.GetPosition(0), target.transform.position, length + initLength / 4));
@@ -126,7 +157,7 @@ public class Turret_Clone
 
         lr = this_turret.AddComponent<LineRenderer>();
         lr.sortingOrder = 1;
-        lr.material = Resources.Load<Material>("Lazer");
+        lr.material = Resources.Load<Material>("Material/Lazer");
         lr.startWidth = 0.25f;
         lr.endWidth = 0.25f;
         lr.SetPosition(0, this_turret.transform.position);
@@ -171,6 +202,7 @@ public class TurretsRepocitort : Repository
 }
 public class TurretsInteractor : Interactor
 {
+   
     TurretsRepocitort turretsRepocitort;
     public Turret_Clone CreatTurrent(float x, float y, Color_state color)
     {
@@ -179,15 +211,19 @@ public class TurretsInteractor : Interactor
         return turret;
     }
     public override void Initialize()=> turretsRepocitort = Scene_1.s.repositorysBase.GetRepository<TurretsRepocitort>();
-    public IEnumerator CircleAtack(float rad, int amount, float rot)
+   
+    public void CircleAtack(float rad, int amount, float rot)
     {
-        var len = 2 * Math.PI * rad / amount;
-        var vv1 = CircleSpawn(rad, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position);
-        var vv2 = CircleSpawn(rad + 8, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position);
-        for (int i = 0; i < vv1.Count; i++) {
-            CreatTurrent(vv2[i].x, vv2[i].y, Color_state.random).turretScript.atack_position = vv1[i];
-        }
 
+        GameObject f = new GameObject();
+        var b = f.AddComponent<Turret_controller>();
+        b.rad = rad;
+        b.rot = rot;
+        b.amount = amount;
+        b.turrets = turretsRepocitort.turrets;
+        //var len = 2 * Math.PI * rad / amount;
+
+        /*
         for (int i = turretsRepocitort.turrets.Count - 1; i >= 1; i--)
         {
             int j = UnityEngine.Random.Range(1, i + 1);
@@ -195,34 +231,11 @@ public class TurretsInteractor : Interactor
             turretsRepocitort.turrets[j] = turretsRepocitort.turrets[i];
             turretsRepocitort.turrets[i] = temp;
         }
+        */
 
-        foreach (var v in turretsRepocitort.turrets )
-        {
-            yield return new WaitForSeconds(2);
-            v.turretScript.Atack();
-            if (v == turretsRepocitort.turrets[turretsRepocitort.turrets.Count- 1])
-            {
 
-            }
-        }
 
-         List<Vector3> CircleSpawn(float rad, int amount, float rot, Vector3 coord)
-        {
-            if (rad > 0 && amount > 0)
-            {
-                List<Vector3> SpawnedObjects = new List<Vector3>();
-                for (int i = 1; i <= amount; ++i)
-                {
-                    var v = new Vector3(coord.x + rad * Mathf.Cos((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), coord.y + rad * Mathf.Sin((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), 0);
-  
-                    SpawnedObjects.Add(v);
-                }
-                return SpawnedObjects;
-            }
-            else return null;
-        }
         //GameObject player = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player;
-        
     }
     public void Clear() => turretsRepocitort.turrets.Clear(); // желательно проверять все ли Gameobject уничтожены
     public void DestroyTurren(Turret_Clone turret)
@@ -231,5 +244,52 @@ public class TurretsInteractor : Interactor
         // ? уничтожать турель в репозитории
     }
 
+    public class Turret_controller : MonoBehaviour
+    {
+        public List<Turret_Clone> turrets;
+        int index_now_turret;
+        public bool atack;
+        public float rad;
+        public int amount;
+        public float rot;
+
+        public void Start()
+        {
+            var vv1 = CircleSpawn(rad, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position);
+            var vv2 = CircleSpawn(rad + 8, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position);
+            var len = 2 * Math.PI * rad / amount;
+            for (int i = 0; i < vv1.Count; i++)
+            {
+                var turret = Scene_1.s.interactorsBase.GetInteractor<TurretsInteractor>().CreatTurrent(vv2[i].x, vv2[i].y, Color_state.random);
+                turret.turretScript.atack_position = vv1[i];
+                turret.this_turret.transform.SetParent(this.transform);
+            }
+         //   turrets[0].turretScript.Atack();
+        }
+        public  void Update()
+        {
+         if (turrets.Count !=  0 && atack == false && index_now_turret <= turrets.Count-1)
+            {
+                
+               if (turrets[index_now_turret].turretScript.Atack2()) index_now_turret++;
+                
+            }       
+        }
+        List<Vector3> CircleSpawn(float rad, int amount, float rot, Vector3 coord)
+        {
+            if (rad > 0 && amount > 0)
+            {
+                List<Vector3> SpawnedObjects = new List<Vector3>();
+                for (int i = 1; i <= amount; ++i)
+                {
+                    var v = new Vector3(coord.x + rad * Mathf.Cos((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), coord.y + rad * Mathf.Sin((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), 0);
+
+                    SpawnedObjects.Add(v);
+                }
+                return SpawnedObjects;
+            }
+            else return null;
+        }
+    }
 }
 

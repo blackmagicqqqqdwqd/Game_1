@@ -21,7 +21,12 @@ public class Lazerwall : MonoBehaviour
     {
         // проверка на выход за границы
         Vector3 v = Camera.main.WorldToViewportPoint(transform.position);
-        if (v.x > (1 + inacculacy) || v.x < (0 - inacculacy) || v.y > (1 + inacculacy) || v.y < (0 - inacculacy)) Destroy(gameObject);
+        if (v.x > (1 + inacculacy) || v.x < (0 - inacculacy) || v.y > (1 + inacculacy) || v.y < (0 - inacculacy))
+        {
+            Destroy(gameObject);
+            Scene_1.s.interactorsBase.GetInteractor<LazerWallsInteractor>().Destroy(lazerwall);
+            
+        }
 
         //lazerwall.Move2(transform.position); // ?
 
@@ -112,6 +117,7 @@ public class Lazerwall_clone
 
 public class LazerWallsRepository : Repository
 {
+    public bool Atack_is_now { get; set; }
     public List<Lazerwall_clone> lazers;
     public LazerWallsRepository()
     {
@@ -122,6 +128,7 @@ public class LazerWallsRepository : Repository
 
 public class LazerWallsInteractor : Interactor
 {
+    
     LazerWallsRepository repository;
     public void Creat(Vector2 center, int length , Vector2 speed ,Color_state color)
     {
@@ -134,28 +141,49 @@ public class LazerWallsInteractor : Interactor
     public void Destroy(Lazerwall_clone lazerwall)
     {
         repository.lazers.Remove(lazerwall);
+        if (repository.lazers.Count == 0 )
+        {
+            Scene_1.Now_atack = false;
+        }
     }
     public void Clear() => repository.lazers.Clear();
-    public IEnumerator atack_sleepers(int count, Vector3 start_position)
+    public void atack_sleepers(int count, Vector3 start_position)
     {
-        float spawn_distans = 3 ;
-        Creat(start_position, 10, new Vector2(4,4), Color_state.random);
-        int x = 0;
-        while (x < count) 
-        {
-            if (( start_position - repository.lazers[repository.lazers.Count-1].This_lazer .transform.position).magnitude > spawn_distans)
-            {
-                Creat(start_position, 10, new Vector2(4, 4), Color_state.random);
-                x++;
-            }
-            yield return null;
-        }
+        var g = new GameObject();
+        var s = g.AddComponent<Lazer_controller>();
+        s.start_position = start_position;
+        s.lazers = repository.lazers;
     }
 }
 
 public class Lazer_controller:MonoBehaviour
 {
-   // List<Lazerwall_clone> lazer_walls;
+    float spawn_distans = 3;
+    public bool Continue { get; set; }
+    public int now_count = 0;
+    public int max_count = 4;
+    public Vector3 start_position;
+    public List<Lazerwall_clone> lazers;
+    public void Start() => Scene_1.Now_atack = true;
+    private void Update()
+    {
+        if (now_count != 0 && (now_count <= max_count) && ((start_position - lazers[lazers.Count - 1].This_lazer.transform.position).magnitude > spawn_distans)  )
+        {
+            now_count++;
+            Scene_1.s.interactorsBase.GetInteractor<LazerWallsInteractor>().Creat(start_position, 10, new Vector2(4, 4), Color_state.random);
+
+        }
+        else if (now_count == 0 && max_count != 0 )
+        {
+            now_count++;
+            Scene_1.s.interactorsBase.GetInteractor<LazerWallsInteractor>().Creat(start_position, 10, new Vector2(4, 4), Color_state.random);
+        }
+    }
+    public void Is_Finish()
+    {
+        if (lazers.Count == 0 && now_count == max_count)
+        Scene_1.Now_atack = false;
+    }
 }
 
 
