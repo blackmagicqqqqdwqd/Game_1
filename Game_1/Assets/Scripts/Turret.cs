@@ -9,63 +9,83 @@ using static TurretsInteractor;
 
 public class Turret : MonoBehaviour
 {
-    enum State
+    public enum State
     {
-        atack,
         move_on_atack_zone,
         move_on_spawn_zone,
-        wait
+        loading_anim,
+        shoot,
+        wait,
+        destroy
     }
-    State state = State.move_on_atack_zone;
+    public State state = State.move_on_atack_zone;
     public Turret_Clone repocitory;
    
     public Vector3 Spawn_position;
     public Vector3 atack_position;
     float move_speed = 6;
 
-    
-    float initLength = 0.125f;
-    float length = 0.125f;
     public void Atack()
-    {
-        repocitory.lr.SetPosition(0, transform.position);
-        transform.parent.GetComponent<Turret_controller>().atack = true;
-        Debug.Log(state );
+    { 
         Vector3 target = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position;
-       // StartCoroutine(ShootPrepare(repocitory.color));
+       
         if ((repocitory.lr.GetPosition(1) - target).magnitude != 0)
-            repocitory.lr.SetPosition(1, Vector3.MoveTowards(repocitory.lr.GetPosition(1), target, 4* Time.deltaTime));
-        else transform.parent.GetComponent<Turret_controller>().atack = false;
-
-        Debug.Log(state);
+            repocitory.lr.SetPosition(1, Vector3.MoveTowards(repocitory.lr.GetPosition(1), target, 16* Time.deltaTime));
     }
-    public bool Atack2()
+    public void Atack2()
     {
-      if (state == State.wait)
-        {
-            state = State.atack;
-            return true;
-        }
-      return false;
-
+         
+            state = State.loading_anim;
     }
     public void Update()
     {
-        Debug.Log(state);
-        if (state == State.atack)
+        switch(state)
         {
-            Atack();
-            
+            case State.wait:
+                break;
+            case State.shoot:
+                Atack();
+                break;
+            case State.move_on_spawn_zone:
+                //
+                if (((transform.position - Spawn_position).magnitude != 0))
+                {
+                    transform.position = Vector3.MoveTowards(transform.position, Spawn_position, move_speed * Time.deltaTime);
+                }
+                else if ((transform.position - Spawn_position).magnitude == 0)
+                {
+                    state = State.destroy;
+                }
+                break;
+            case State.move_on_atack_zone: ////////////
+                if (((transform.position - atack_position).magnitude != 0))
+                {
+                    transform.position = Vector3.MoveTowards(transform.position, atack_position, move_speed * Time.deltaTime);
+                }
+                else if ((transform.position - atack_position).magnitude == 0)
+                {
+                    state = State.wait;
+                    repocitory.lr.SetPosition(0, transform.position);
+                    repocitory.lr.SetPosition(1, transform.position);
+                }
+
+                break;
+            case State.loading_anim: ////////////
+                if (repocitory.anim.GetBool(0) == false || repocitory.anim.GetBool(1) == false || repocitory.anim.GetBool(0) == false)
+                {
+                    if (repocitory.color == Color_state.purple) repocitory.anim.SetBool("magenta_atack", true);
+                    else if (repocitory.color == Color_state.blue) repocitory.anim.SetBool("blue_atack", true);
+                    else if (repocitory.color == Color_state.red) repocitory.anim.SetBool("red_atack", true);
+                }
+                state = State.wait;
+                break;
+            case State.destroy:
+                Destroy(gameObject);
+                break;
         }
-
-        if (((transform.position - atack_position).magnitude != 0) && state == State.move_on_atack_zone)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, atack_position, move_speed * Time.deltaTime);
-        }
-        else if (((transform.position - atack_position).magnitude == 0 && state == State.move_on_atack_zone)) state = State.wait;
-
-
-            if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(repocitory.lr.GetPosition(1)) && state ==State.atack)
+      
+      
+            if (repocitory.lr.positionCount != 0 && Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(repocitory.lr.GetPosition(1)) && state ==State.shoot)
         {
             if (repocitory.color != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color)
             {
@@ -74,61 +94,15 @@ public class Turret : MonoBehaviour
                 transform.parent.GetComponent<Turret_controller>().atack = false;
             }
             else state = State.wait;
+
             transform.parent.GetComponent<Turret_controller>().atack = false;
+            repocitory.lr.positionCount = 0;
+            state = State.move_on_spawn_zone;
         }
+
+    }
+
     
-    }
-    IEnumerator ShootTarget(GameObject target)
-    {
-      
-        yield return new WaitForSeconds(0.005f);
-        repocitory.lr.SetPosition(0, transform.position);
-        repocitory.lr.SetPosition(1, Vector3.Lerp(repocitory.lr.GetPosition(0), target.transform.position, length + initLength / 4));
-        length += initLength / 4;
-        if (repocitory.anim.GetBool("magenta_atack") == true) repocitory.anim.SetBool("magenta_atack", false);
-        else if (repocitory.anim.GetBool("blue_atack") == true) repocitory.anim.SetBool("blue_atack", false);
-        else if (repocitory.anim.GetBool("red_atack") == true) repocitory.anim.SetBool("red_atack", false);
-        if (repocitory.lr.GetPosition(1) != target.transform.position) { StartCoroutine(ShootTarget(target)); }
-        else
-        {
-            yield return new WaitForSeconds(0.25f);
-            repocitory.lr.SetPosition(1, repocitory.lr.GetPosition(0));
-            length = initLength;
-            repocitory.anim.SetBool("idle", true);
-        }
-
-
-    }
-   
-    IEnumerator ShootPrepare(Color_state color)
-
-    {
-        if (color == Color_state.purple)
-        {
-            repocitory.lr.startColor = Color.magenta;
-            repocitory.lr.endColor = Color.magenta;
-            repocitory.anim.SetBool("magenta_atack", true);
-            repocitory.anim.SetBool("idle", false);
-        }
-        else if (color == Color_state.blue)
-        {
-            repocitory.lr.startColor = Color.blue;
-            repocitory.lr.endColor = Color.blue;
-            repocitory.anim.SetBool("blue_atack", true);
-            repocitory.anim.SetBool("idle", false);
-            Debug.Log(1);
-        }
-        else if (color == Color_state.red)
-        {
-            repocitory.lr.startColor = Color.red;
-            repocitory.lr.endColor = Color.red;
-            repocitory.anim.SetBool("red_atack", true);
-            repocitory.anim.SetBool("idle", false);
-        }        
-        yield return new WaitForSeconds(2.05f);
-        StartCoroutine(ShootTarget(Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player));
-    }
-
 }
 public class Turret_Clone
 {
@@ -166,7 +140,7 @@ public class Turret_Clone
         anim = this_turret.AddComponent<Animator>();
         anim.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Animation/Turret 1");
 
-
+        turretScript.Spawn_position = new Vector3(x,y,0);
         switch (color)
         {
             case Color_state.red:
@@ -221,27 +195,12 @@ public class TurretsInteractor : Interactor
         b.rot = rot;
         b.amount = amount;
         b.turrets = turretsRepocitort.turrets;
-        //var len = 2 * Math.PI * rad / amount;
 
-        /*
-        for (int i = turretsRepocitort.turrets.Count - 1; i >= 1; i--)
-        {
-            int j = UnityEngine.Random.Range(1, i + 1);
-            var temp = turretsRepocitort.turrets[j];
-            turretsRepocitort.turrets[j] = turretsRepocitort.turrets[i];
-            turretsRepocitort.turrets[i] = temp;
-        }
-        */
-
-
-
-        //GameObject player = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player;
     }
     public void Clear() => turretsRepocitort.turrets.Clear(); // желательно проверять все ли Gameobject уничтожены
     public void DestroyTurren(Turret_Clone turret)
     {
-        GameObject.Destroy(turret.this_turret);
-        // ? уничтожать турель в репозитории
+        turretsRepocitort.turrets.Clear();
     }
 
     public class Turret_controller : MonoBehaviour
@@ -255,6 +214,7 @@ public class TurretsInteractor : Interactor
 
         public void Start()
         {
+            Scene_1.Now_atack = true;
             var vv1 = CircleSpawn(rad, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position);
             var vv2 = CircleSpawn(rad + 8, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position);
             var len = 2 * Math.PI * rad / amount;
@@ -264,16 +224,22 @@ public class TurretsInteractor : Interactor
                 turret.turretScript.atack_position = vv1[i];
                 turret.this_turret.transform.SetParent(this.transform);
             }
-         //   turrets[0].turretScript.Atack();
         }
         public  void Update()
         {
-         if (turrets.Count !=  0 && atack == false && index_now_turret <= turrets.Count-1)
+         if (turrets.Count !=  0 && atack == false && index_now_turret <= turrets.Count-1 && turrets[index_now_turret].turretScript.state == Turret.State.wait)
             {
-                
-               if (turrets[index_now_turret].turretScript.Atack2()) index_now_turret++;
-                
+                atack = true;
+                turrets[index_now_turret].turretScript.Atack2();
+                index_now_turret++;
             }       
+         if (index_now_turret == amount && atack == false)
+            {
+                Scene_1.Now_atack = false;
+                Scene_1.s.interactorsBase.GetInteractor<TurretsInteractor>().Clear();
+                GameObject.Destroy(this.gameObject);
+
+            }
         }
         List<Vector3> CircleSpawn(float rad, int amount, float rot, Vector3 coord)
         {

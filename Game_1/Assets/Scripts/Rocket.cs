@@ -123,5 +123,13 @@ public class RocketInteractor: Interactor
         rocketRepocitory.rockets.Add(rocket);
         return rocket;
     }
+    public void Rocket_Atack(int count)
+    {
+
+    }
+    public void Massage_abount_atack()
+    {
+
+    }
     public override void Initialize() => rocketRepocitory = Scene_1.s.repositorysBase.GetRepository<RocketRepocitory>();
 }

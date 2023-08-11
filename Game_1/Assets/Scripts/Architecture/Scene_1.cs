@@ -7,6 +7,7 @@ using static Turret_Rot;
 
 public class Scene_1 : MonoBehaviour
 {
+    string ss = "12120";
     public static Scene s;
     int now_index = 0;
     public static bool Now_atack;
@@ -20,21 +21,16 @@ public class Scene_1 : MonoBehaviour
     private void Start()
     {
 
-        //s.interactorsBase.GetInteractor<Turret_RotIterator>().Creat_Turret_Rot(-4, - 14,Color_state.red   );
-       // s.interactorsBase.GetInteractor<TurretsInteractor>().CircleAtack(3.5f,6,0);
-       // s.interactorsBase.GetInteractor<TurretsInteractor>().CreatTurrent(2, 2, Color_state.random);
         s.interactorsBase.GetInteractor<HP_UIInteractor>().Show_HP();
-        //s.interactorsBase.GetInteractor<GAMEOVER_UIInteractor>().Show_goscreen();
-        //s.interactorsBase.GetInteractor<HP_UIInteractor>().Set_HP(0);
-        //s.interactorsBase.GetInteractor<LazerWallsInteractor>().Creat(new Vector2(0, -10), 10, Color_state.red); ;
+
     }
     private void Update()
     {
-        string ss = "110";
+       
        
         if (Now_atack == false )
         {
-           
+          
             switch (ss[now_index])
             {
                 case '1':
@@ -42,6 +38,7 @@ public class Scene_1 : MonoBehaviour
                     {
                         now_index++;
                         s.interactorsBase.GetInteractor<LazerWallsInteractor>().atack_sleepers(2, new Vector2(0, -10));
+                        Now_atack =true;
                     }
 
                     break;
@@ -49,12 +46,13 @@ public class Scene_1 : MonoBehaviour
                     if (Now_atack == false)
                     {
                         now_index++;
+                        Now_atack = true;
                         Scene_1.s.interactorsBase.GetInteractor<TurretsInteractor>().CircleAtack(4, 6, 0);
                     }
 
                     break;
                 case '0':
-                    Now_atack = false;
+                    Now_atack = true;
                     break;
               
             }
