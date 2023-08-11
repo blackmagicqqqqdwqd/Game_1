@@ -127,7 +127,7 @@ public class RocketInteractor: Interactor
     {
 
     }
-    public void Massage_abount_atack()
+    public void Massage_about_atack()
     {
 
     }
