@@ -1,126 +1,128 @@
+
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
-using UnityEngine.UIElements;
-using System.Net.Sockets;
 
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(CircleCollider2D))]
+[RequireComponent(typeof(SpriteRenderer))]
 public class Rocket : MonoBehaviour
 {
+    private SpriteRenderer spriteRenderer;
+    private Transform target;
 
-    Vector3 playerPos;
-    public void Start()
+    private Color_state color = Color_state.none;
+    public Color_state Mycolor
     {
-         playerPos = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position; 
-    }
-    Vector3 point;
-    public Color_state cl = Color_state.none;
-    public Rocket(float x, float y, Color_state color)
-    {
-
-        GameObject this_rocket = new GameObject("SomeRocket");
-        var SR = this_rocket.AddComponent<SpriteRenderer>();
-        this_rocket.AddComponent<CircleCollider2D>();
-        this_rocket.AddComponent<Rigidbody2D>();
-        this_rocket.AddComponent<CollisionDetector>().mycolor = color;
-
-        SR.sprite = Resources.Load<Sprite>("Sprites/ProtectedCircle");
-        switch (color)
+        get { return color; }
+        set
         {
-            case Color_state.red:
-                SR.color = Color.red;
-                
-                break;
-            case Color_state.blue:
-                SR.color = Color.blue;
-                break;
-            case Color_state.purple:
-                SR.color = Color.magenta;
-                break;
-            case Color_state.none:
-                SR.color = Color.white ;
-                break;
-            default:
-                SR.color = Color.red;
-                break;
-        }
-        SR.sortingOrder = 2;
-        this_rocket.transform.position = new Vector3(x, y, 0);
-        LaunchRocket(Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player, this_rocket, 2); // мин нормальная скорость = 8
-    }
-    void LaunchRocket(GameObject target, GameObject rocket, int speed)
-    {
-        rocket.GetComponent<Rigidbody2D>().AddForce((target.transform.position - rocket.transform.position) * speed,ForceMode2D.Impulse);
-        rocket.GetComponent<Rigidbody2D>().gravityScale = 0;
-    }
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.V) == true) {
-            switch (Random.Range(0, 8))
+            if (spriteRenderer != null)
             {
-                case 0:
-                    Rocket rocket = new (playerPos.x - 10, playerPos.y - 10, Color_state.red);
-                    break;
-                case 1:
-                    Rocket rocket1 = new(playerPos.x - 10, playerPos.y + 10, Color_state.red);
-                    break;
-                case 2:
-                    Rocket rocket2 = new(playerPos.x + 10, playerPos.y + 10, Color_state.red);
-                    break;
-                case 3:
-                    Rocket rocket3 = new(playerPos.x + 10, playerPos.y - 10, Color_state.red);
-                    break;
-                case 4:
-                    Rocket rocket4 = new(playerPos.x - 7, playerPos.y - 8, Color_state.red);
-                    break;
-                case 5:
-                    Rocket rocket5 = new(playerPos.x - 9, playerPos.y + 6, Color_state.red);
-                    break;
-                case 6:
-                    Rocket rocket6 = new(playerPos.x + 5, playerPos.y + 7, Color_state.red);
-                    break;
-                case 7:
-                    Rocket rocket7 = new(playerPos.x + 8, playerPos.y - 7, Color_state.red);
-                    break;
+                switch (value)
+                {
+                    case Color_state.red:
+                        color = Color_state.red;
+                        spriteRenderer.color = Color.red;
+                        break;
+                    case Color_state.blue:
+                        color = Color_state.blue;
+                        spriteRenderer.color = Color.blue;
+                        break;
+                    case Color_state.purple:
+                        color = Color_state.purple;
+                        spriteRenderer.color = Color.magenta;
+                        break;
+                    default:
+                        color = Color_state.red;
+
+                        break;
+                }
             }
         }
     }
-}
-public class CollisionDetector : MonoBehaviour {
-    public Color_state mycolor;
-    public bool statk;
+
+    bool b = true; 
+    public void Start()
+    {
+        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        Mycolor = (Color_state)Random.Range(1, 4);
+        target = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform;
+        switch (Random.Range(0, 8))
+        {
+            case 0:
+                transform.position = new Vector3(target.position.x - 10, target.position.y - 10, 0);
+                break;
+            case 1:
+                transform.position = new Vector3(target.position.x - 10, target.position.y + 10, 0);
+                break;
+            case 2:
+                transform.position = new Vector3(target.position.x + 10, target.position.y + 10, 0);
+                break;
+            case 3:
+                transform.position = new Vector3(target.position.x + 10, target.position.y - 10, 0);
+                break;
+            case 4:
+                transform.position = new Vector3(target.position.x - 7, target.position.y - 8, 0);
+                break;
+            case 5:
+                transform.position = new Vector3(target.position.x - 9, target.position.y + 6, 0);
+                break;
+            case 6:
+                transform.position = new Vector3(target.position.x + 5, target.position.y + 7, 0);
+                break;
+            case 7:
+                transform.position = new Vector3(target.position.x + 8, target.position.y - 7, 0);
+                break;
+        }
+        LaunchRocket(target.gameObject, gameObject, 3);
+    }
+    public void Update()
+    {
+       
+    }
+
+    void LaunchRocket(GameObject target, GameObject rocket, int speed)
+    {
+        rocket.GetComponent<Rigidbody2D>().AddForce((target.transform.position - rocket.transform.position) * speed, ForceMode2D.Impulse);
+        rocket.GetComponent<Rigidbody2D>().gravityScale = 0;
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject == Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().shield)
         {
 
-            if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color != mycolor && statk == false)
+            if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color != Mycolor)
             {
-                
+
                 Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();
-                statk = true;
             }
             Destroy(gameObject);
-            //gameObject(false);
-        }  
+
+        }
     }
 }
 
+
 public class RocketRepocitory : Repository
 {
-    public List<Rocket> rockets;
-    public override void Initialize()
-    {
-        rockets = new List<Rocket>();
-    }
+    public Rocket_controller rocket_Controller;
+
 }
-public class RocketInteractor: Interactor
+public class RocketInteractor : Interactor
 {
+
     RocketRepocitory rocketRepocitory;
-    public Rocket CreateRocket(float x, float y, Color_state color)
+    public Rocket CreateRocket(Rocket_controller controller, Color_state color)
     {
-        Rocket rocket = new Rocket(x, y, color);
-        rocketRepocitory.rockets.Add(rocket);
+        if (rocketRepocitory == null) Creat_Controller();
+
+        GameObject gameObject = new GameObject();
+        Rocket rocket = GameObject.Instantiate(Resources.Load<GameObject>("Rocket")).GetComponent<Rocket>();
+        rocket.Mycolor = Color_state.blue;
+        //rocketRepocitory.rocket_Controller.rockets.Add(rocket);
         return rocket;
     }
     public void Rocket_Atack(int count)
@@ -129,7 +131,42 @@ public class RocketInteractor: Interactor
     }
     public void Massage_about_atack()
     {
-
+        Debug.Log("вас атакуют через две секунды");
     }
     public override void Initialize() => rocketRepocitory = Scene_1.s.repositorysBase.GetRepository<RocketRepocitory>();
+    public void Creat_Controller()
+    {
+        if (rocketRepocitory.rocket_Controller == null)
+        {
+            GameObject gameObject = new GameObject("controller");
+            rocketRepocitory.rocket_Controller = gameObject.AddComponent<Rocket_controller>();
+        }
+    }
 }
+
+public class Rocket_controller : MonoBehaviour
+{
+    private int count = 5;
+    //public bool atack { get; set; }
+    public List<Rocket> rockets;
+    private void Start()
+    {
+        StartCoroutine(LaunchRocket());
+    }
+
+    public IEnumerator LaunchRocket()
+    {
+        for (int i = 0; i < count; i++)
+        {
+            Scene_1.s.interactorsBase.GetInteractor<RocketInteractor>().Massage_about_atack();
+            yield return new WaitForSeconds(2);
+            Scene_1.s.interactorsBase.GetInteractor<RocketInteractor>().CreateRocket(this, (Color_state)Random.Range(1, 4));
+            yield return new WaitForSeconds(1);
+        }
+        Scene_1.Now_atack = false;
+    }
+
+}
+
+
+

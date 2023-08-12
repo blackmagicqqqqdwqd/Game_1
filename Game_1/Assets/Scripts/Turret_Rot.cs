@@ -141,7 +141,7 @@ public class Turret_RotRepocitory : Repository
 
 public class Turret_rot_controller : MonoBehaviour
 {
-    public List<Turret_Clone> turrets;
+    //public List<Turret_Clone> turrets;
     int index_now_turret;
     public bool atack;
     public float rad;

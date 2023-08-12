@@ -7,7 +7,7 @@ using static Turret_Rot;
 
 public class Scene_1 : MonoBehaviour
 {
-    string ss = "12120";
+    string ss = "3210";
     public static Scene s;
     int now_index = 0;
     public static bool Now_atack;
@@ -49,7 +49,14 @@ public class Scene_1 : MonoBehaviour
                         Now_atack = true;
                         Scene_1.s.interactorsBase.GetInteractor<TurretsInteractor>().CircleAtack(4, 6, 0);
                     }
-
+                    break;
+                case '3':
+                    if (Now_atack == false)
+                    {
+                        now_index++;
+                        Now_atack = true;
+                        s.interactorsBase.GetInteractor<RocketInteractor>().Creat_Controller();
+                    }
                     break;
                 case '0':
                     Now_atack = true;

@@ -1,261 +1,349 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
-using static TurretsInteractor;
 
+[RequireComponent(typeof(LineRenderer))]
+[RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(Animation))]
 public class Turret : MonoBehaviour
 {
     public enum State
     {
-        move_on_atack_zone,
+        rotation,
+        rotation_and_charging,
         move_on_spawn_zone,
-        loading_anim,
+        charging,
         shoot,
+        orbit_rotation,
         wait,
+        rotation_and_shoot,
         destroy
     }
-    public State state = State.move_on_atack_zone;
-    public Turret_Clone repocitory;
-   
-    public Vector3 Spawn_position;
-    public Vector3 atack_position;
-    float move_speed = 6;
 
-    public void Atack()
-    { 
-        Vector3 target = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position;
-       
-        if ((repocitory.lr.GetPosition(1) - target).magnitude != 0)
-            repocitory.lr.SetPosition(1, Vector3.MoveTowards(repocitory.lr.GetPosition(1), target, 16* Time.deltaTime));
-    }
-    public void Atack2()
+    private Color_state color = Color_state.red;
+    public Color_state Mycolor
     {
-         
-            state = State.loading_anim;
+        get { return color; }
+        set
+        {
+            switch (value)
+            {
+                case Color_state.red:
+                    color = Color_state.red;
+                    lineRenderer.startColor = Color.red;
+                    lineRenderer.endColor = Color.red;
+                    break;
+                case Color_state.blue:
+                    color = Color_state.blue;
+                    lineRenderer.startColor = Color.blue;
+                    lineRenderer.endColor = Color.blue;
+                    break;
+                case Color_state.purple:
+                    color = Color_state.purple;
+                    lineRenderer.startColor = Color.magenta;
+                    lineRenderer.endColor = Color.magenta;
+                    break;
+                default:
+                    color = Color_state.red;
+                    lineRenderer.startColor = Color.red;
+                    lineRenderer.endColor = Color.red;
+                    break;
+            }
+        }
     }
+
+    public State MyState { get; set; } = State.wait;
+   
+    public Vector3 Spawn_position { get; set; }
+    public Vector3 atack_position { get; set; }
+
+    private LineRenderer lineRenderer;
+    private Animator animator;
+    private Transform target;
+    private float move_speed = 6;
+    private float lazer_speed = 10;
+    private float lenth =0;
+
+    public void Start()
+    {
+        lineRenderer = gameObject.GetComponent<LineRenderer>();
+        animator = gameObject.GetComponent<Animator>();
+        target = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform;
+        lineRenderer.SetColors(Color.red, Color.red);
+        lineRenderer.positionCount = 0;
+    }
+   
     public void Update()
     {
-        switch(state)
+       
+        
+        switch (MyState)
         {
             case State.wait:
+              
                 break;
             case State.shoot:
                 Atack();
+
                 break;
             case State.move_on_spawn_zone:
                 //
+                transform.parent.GetComponent<Turret_controller>().SpawnPos();
                 if (((transform.position - Spawn_position).magnitude != 0))
                 {
                     transform.position = Vector3.MoveTowards(transform.position, Spawn_position, move_speed * Time.deltaTime);
                 }
-                else if ((transform.position - Spawn_position).magnitude == 0)
+                 if ((transform.position - target.position).magnitude >= (Spawn_position - target.position).magnitude - 0.2f)
                 {
-                    state = State.destroy;
+                    MyState = State.destroy;
                 }
                 break;
-            case State.move_on_atack_zone: ////////////
-                if (((transform.position - atack_position).magnitude != 0))
+            case State.orbit_rotation:
+                   
+            case State.rotation: ////////////
+                Move_on_atack_position();
+                if ((transform.position - target.position).magnitude <= (atack_position - target.position).magnitude + 0.1f)
                 {
-                    transform.position = Vector3.MoveTowards(transform.position, atack_position, move_speed * Time.deltaTime);
+                    MyState = State.orbit_rotation;
                 }
-                else if ((transform.position - atack_position).magnitude == 0)
-                {
-                    state = State.wait;
-                    repocitory.lr.SetPosition(0, transform.position);
-                    repocitory.lr.SetPosition(1, transform.position);
-                }
-
                 break;
-            case State.loading_anim: ////////////
-                if (repocitory.anim.GetBool(0) == false || repocitory.anim.GetBool(1) == false || repocitory.anim.GetBool(0) == false)
-                {
-                    if (repocitory.color == Color_state.purple) repocitory.anim.SetBool("magenta_atack", true);
-                    else if (repocitory.color == Color_state.blue) repocitory.anim.SetBool("blue_atack", true);
-                    else if (repocitory.color == Color_state.red) repocitory.anim.SetBool("red_atack", true);
-                }
-                state = State.wait;
+            case State.charging: ////////////
+             
+                Charging();
                 break;
             case State.destroy:
+            
                 Destroy(gameObject);
                 break;
+            case State.rotation_and_charging:
+             
+                Charging();
+            
+                Move_on_atack_position();
+                break;
+            case State.rotation_and_shoot:
+                Atack();
+                Move_on_atack_position();
+                break;
         }
-      
-      
-            if (repocitory.lr.positionCount != 0 && Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(repocitory.lr.GetPosition(1)) && state ==State.shoot)
+
+
+
+
+        if (lineRenderer.positionCount != 0 && Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(lineRenderer.GetPosition(1)) && (MyState ==State.shoot || MyState == State.rotation_and_shoot))
         {
-            if (repocitory.color != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color)
+            if (Mycolor != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color)
             {
                 Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();
-                state = State.wait;
+                MyState = State.wait;
                 transform.parent.GetComponent<Turret_controller>().atack = false;
             }
-            else state = State.wait;
+            else MyState = State.wait;
 
             transform.parent.GetComponent<Turret_controller>().atack = false;
-            repocitory.lr.positionCount = 0;
-            state = State.move_on_spawn_zone;
+            lineRenderer.positionCount = 0;
+            MyState = State.move_on_spawn_zone;
         }
 
+    }
+    public void Atack()
+    {
+        if (lineRenderer.positionCount != 2  )
+        {
+            lineRenderer.positionCount = 2;
+            lineRenderer.SetPosition(1, transform.position);
+        }
+       
+        lineRenderer.SetPosition(0,transform.position);
+        
+        if ((lineRenderer.GetPosition(1) - target.position).magnitude != 0)
+        {
+           lineRenderer.SetPosition(1, Vector3.MoveTowards(transform.position, target.position, lenth)  );
+           lenth += lazer_speed * Time.deltaTime;
+        }
+          
     }
 
     
-}
-public class Turret_Clone
-{
-    public Color_state color { get; set; }
-    public LineRenderer lr;
-    public Animator anim;
-    public GameObject this_turret;
-    public Turret turretScript;
-    public Turret_Clone(float x, float y, Color_state color = Color_state.random)
+    public void Charging()
     {
-        if (color == Color_state.random)
+        
+        if (animator.GetBool(0) == false || animator.GetBool(1) == false || animator.GetBool(0) == false)
         {
-            color = (Color_state) UnityEngine.Random.Range(1, 4);
+            Debug.Log(1);
+            if (Mycolor == Color_state.purple) animator.SetBool("magenta_atack", true);
+            else if (Mycolor == Color_state.blue) animator.SetBool("blue_atack", true);
+            else if (Mycolor == Color_state.red)
+            {
+
+                animator.SetBool("red_atack", true);
+            }
+            
         }
-        this.color = color;
-
-        this_turret = new GameObject();
-        this_turret.transform.position = new Vector3(x, y, 0);
-
-        SpriteRenderer sr = this_turret.AddComponent<SpriteRenderer>();
-        sr.sprite = Resources.Load<Sprite>("Sprites/ProtectedCircle");
-        sr.sortingOrder = 2;
-
-        turretScript = this_turret.AddComponent<Turret>();
-        turretScript.repocitory = this;
-
-        lr = this_turret.AddComponent<LineRenderer>();
-        lr.sortingOrder = 1;
-        lr.material = Resources.Load<Material>("Material/Lazer");
-        lr.startWidth = 0.25f;
-        lr.endWidth = 0.25f;
-        lr.SetPosition(0, this_turret.transform.position);
-        lr.SetPosition(1, this_turret.transform.position);
-
-        anim = this_turret.AddComponent<Animator>();
-        anim.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Animation/Turret 1");
-
-        turretScript.Spawn_position = new Vector3(x,y,0);
-        switch (color)
+     
+    }
+    public void Atack2() => MyState = State.rotation_and_charging;
+    public void Move_on_atack_position()
+    {
+        //Debug.Log((transform.position - target).magnitude);
+        
+        if (((transform.position - atack_position).magnitude != 0))
         {
-            case Color_state.red:
-                lr.startColor = UnityEngine.Color.red;
-                lr.endColor = UnityEngine.Color.red;
-                break;
-            case Color_state.blue:
-                lr.startColor = UnityEngine.Color.blue;
-                lr.endColor = UnityEngine.Color.blue;
-                break;
-            case Color_state.purple:
-                lr.startColor = UnityEngine.Color.magenta;
-                lr.endColor = UnityEngine.Color.magenta;
-                break;
-            case Color_state.none:
-                lr.startColor = UnityEngine.Color.white;
-                lr.endColor = UnityEngine.Color.white;
-                break;
-            default:
-                lr.startColor = UnityEngine.Color.black;
-                lr.endColor = UnityEngine.Color.black;
-                break;
+            transform.position = Vector3.MoveTowards(transform.position, atack_position, move_speed * Time.deltaTime);
         }
+        else if ((transform.position - atack_position).magnitude == 0)
+        {
+            MyState = State.wait;
+            //lineRenderer.SetPosition(0, transform.position);
+            //lineRenderer.SetPosition(1, transform.position);
+        }
+       
     }
 }
+
 public class TurretsRepocitort : Repository
 {
-    public List<Turret_Clone> turrets;
-    public override void Initialize()
-    {
-        turrets = new List<Turret_Clone>();
-    }
+    public Turret_controller my_contorller;
 }
+
 public class TurretsInteractor : Interactor
 {
-   
     TurretsRepocitort turretsRepocitort;
-    public Turret_Clone CreatTurrent(float x, float y, Color_state color)
+    public Turret CreatTurrent(float x, float y, Color_state color, Turret_controller my_contorller)
     {
-        Turret_Clone turret = new Turret_Clone(x, y, color);
-        turretsRepocitort.turrets.Add(turret);
-        return turret;
+        if (my_contorller != null)
+        {
+           
+            GameObject gameObject = GameObject.Instantiate(Resources.Load<GameObject>("pr"));
+            gameObject.transform.position = new Vector3(x, y, 0);
+            Turret turret = gameObject.GetComponent<Turret>();
+            turret.Spawn_position = new Vector3(x, y, 0);
+            my_contorller.turrets.Add(turret);
+            return turret;
+        }
+        Debug.Log("не создан контролер");
+        return null;       
     }
+
     public override void Initialize()=> turretsRepocitort = Scene_1.s.repositorysBase.GetRepository<TurretsRepocitort>();
-   
+    public Turret_controller Creat_controller()
+    {
+        GameObject gameObject = new GameObject("Contoller_turrets");
+        Turret_controller contoller = gameObject.AddComponent<Turret_controller>();
+        turretsRepocitort.my_contorller = contoller;
+
+        if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player == null)
+            gameObject.transform.position = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position;
+        return contoller;
+
+    }
     public void CircleAtack(float rad, int amount, float rot)
     {
-
-        GameObject f = new GameObject();
-        var b = f.AddComponent<Turret_controller>();
-        b.rad = rad;
-        b.rot = rot;
-        b.amount = amount;
-        b.turrets = turretsRepocitort.turrets;
-
+        var contoller = Creat_controller();
+        contoller.rad = rad;
+        contoller.amount = amount;
+        contoller.rot = rot;
     }
-    public void Clear() => turretsRepocitort.turrets.Clear(); // желательно проверять все ли Gameobject уничтожены
-    public void DestroyTurren(Turret_Clone turret)
+    public void DestroyTurren( ) =>  GameObject.Destroy(turretsRepocitort.my_contorller);
+
+
+}
+
+public class Turret_controller : MonoBehaviour
+{
+    public List<Turret> turrets = new List<Turret>();
+    int index_now_turret = 0;
+    public bool atack = false;
+    public float rad = 3;
+    public int amount = 3;
+    public float rot = 0;
+
+    public void Start()
     {
-        turretsRepocitort.turrets.Clear();
-    }
+        Scene_1.Now_atack = true;
+      
+        List<Vector3> atack_position = CircleSpawn(rad, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position);
+        List<Vector3> spawn_position = CircleSpawn(rad + 8, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position);
+        var len = 2 * Math.PI * rad / amount;
 
-    public class Turret_controller : MonoBehaviour
+        for (int i = 0; i < amount; i++)
+        {
+            var turret = Scene_1.s.interactorsBase.GetInteractor<TurretsInteractor>().CreatTurrent(spawn_position[i].x, spawn_position[i].y, Color_state.red, this);
+            turret.atack_position = atack_position[i];
+            turret.transform.SetParent(this.transform);
+            turret.MyState = Turret.State.wait;
+
+
+        }
+        Move_On_atack_zone_all();
+        
+    }
+    public void Update()
     {
-        public List<Turret_Clone> turrets;
-        int index_now_turret;
-        public bool atack;
-        public float rad;
-        public int amount;
-        public float rot;
-
-        public void Start()
+        
+        List<Vector3> atack_position = CircleSpawn(rad, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position);
+        rot += 20 * Time.deltaTime;
+      
+        Change_atack_position_all(atack_position);
+        
+        //if (turrets[0].turretScript.state == Turret.State.wait) { transform.Rotate(new Vector3(0, 0, 20 * Time.deltaTime)); }
+        if (turrets.Count != 0 && atack == false && index_now_turret <= turrets.Count - 1 && turrets[index_now_turret].MyState == Turret.State.orbit_rotation)
         {
-            Scene_1.Now_atack = true;
-            var vv1 = CircleSpawn(rad, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position);
-            var vv2 = CircleSpawn(rad + 8, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position);
-            var len = 2 * Math.PI * rad / amount;
-            for (int i = 0; i < vv1.Count; i++)
-            {
-                var turret = Scene_1.s.interactorsBase.GetInteractor<TurretsInteractor>().CreatTurrent(vv2[i].x, vv2[i].y, Color_state.random);
-                turret.turretScript.atack_position = vv1[i];
-                turret.this_turret.transform.SetParent(this.transform);
-            }
+            atack = true;
+            turrets[index_now_turret].Atack2();
+            index_now_turret++;
         }
-        public  void Update()
+        if (index_now_turret == amount && atack == false)
         {
-         if (turrets.Count !=  0 && atack == false && index_now_turret <= turrets.Count-1 && turrets[index_now_turret].turretScript.state == Turret.State.wait)
-            {
-                atack = true;
-                turrets[index_now_turret].turretScript.Atack2();
-                index_now_turret++;
-            }       
-         if (index_now_turret == amount && atack == false)
-            {
-                Scene_1.Now_atack = false;
-                Scene_1.s.interactorsBase.GetInteractor<TurretsInteractor>().Clear();
-                GameObject.Destroy(this.gameObject);
+            Scene_1.Now_atack = false;
+            Scene_1.s.interactorsBase.GetInteractor<TurretsInteractor>().DestroyTurren();
+            GameObject.Destroy(this.gameObject);
 
-            }
-        }
-        List<Vector3> CircleSpawn(float rad, int amount, float rot, Vector3 coord)
-        {
-            if (rad > 0 && amount > 0)
-            {
-                List<Vector3> SpawnedObjects = new List<Vector3>();
-                for (int i = 1; i <= amount; ++i)
-                {
-                    var v = new Vector3(coord.x + rad * Mathf.Cos((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), coord.y + rad * Mathf.Sin((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), 0);
-
-                    SpawnedObjects.Add(v);
-                }
-                return SpawnedObjects;
-            }
-            else return null;
         }
     }
+    List<Vector3> CircleSpawn(float rad, int amount, float rot, Vector3 coord)
+    {
+        if (rad > 0 && amount > 0)
+        {
+            List<Vector3> SpawnedObjects = new List<Vector3>();
+            for (int i = 1; i <= amount; ++i)
+            {
+                var v = new Vector3(coord.x + rad * Mathf.Cos((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), coord.y + rad * Mathf.Sin((360 / amount) * i * Mathf.Deg2Rad + rot * Mathf.Deg2Rad), 0);
+
+                SpawnedObjects.Add(v);
+            }
+            return SpawnedObjects;
+        }
+        else return null;
+    }
+    public void Move_On_atack_zone_all()
+    {
+        foreach (Turret turret in turrets) turret.MyState = Turret.State.rotation;
+    }
+    public void Move_On_spawn_zone()
+    {
+
+    }
+    public void Change_atack_position_all(List<Vector3> atack_positions)
+    {
+        for (int i = 0; i < amount; ++i)
+        {
+            turrets[i].atack_position = atack_positions[i];
+        }
+    }
+    public void Change_swapn_position()
+    {
+
+    }
+    public void SpawnPos()
+    {
+        List<Vector3> spawn_position = CircleSpawn(rad + 8, amount, rot, Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position);
+        for (int i = 0; i < amount; ++i)
+        {
+            turrets[i].Spawn_position = spawn_position[i];
+        }
+       
+    }
+    
 }
 
