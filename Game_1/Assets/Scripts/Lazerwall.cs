@@ -66,24 +66,30 @@ public class Lazerwall_clone
         lr.sortingOrder = 1;
         lr.SetPosition(0, center - new Vector2(wight / 2, 0));
         lr.SetPosition(1, center + new Vector2(wight / 2, 0));
-        lr.SetWidth(0.3f, 0.3f);
+        lr.startWidth = 0.3f;
+        lr.endWidth = 0.3f;
         lr.material = Resources.Load<Material>("Material/Lazer");
         switch (color)
         {
             case Color_state.red:
-                lr.SetColors(UnityEngine.Color.red, UnityEngine.Color.red);
+                lr.startColor = UnityEngine.Color.red;
+                lr.endColor = UnityEngine.Color.red;
                 break;
             case Color_state.blue:
-                lr.SetColors(UnityEngine.Color.blue, UnityEngine.Color.blue);
+                lr.startColor = UnityEngine.Color.blue;
+                lr.endColor = UnityEngine.Color.blue;
                 break;
             case Color_state.purple:
-                lr.SetColors(UnityEngine.Color.magenta, UnityEngine.Color.magenta);
+                lr.startColor = UnityEngine.Color.magenta;
+                lr.endColor = UnityEngine.Color.magenta;
                 break;
             case Color_state.none:
-                lr.SetColors(UnityEngine.Color.white, UnityEngine.Color.white);
+                lr.startColor = UnityEngine.Color.white;
+                lr.endColor = UnityEngine.Color.white;
                 break;
             default:
-                lr.SetColors(UnityEngine.Color.black, UnityEngine.Color.black);
+                lr.startColor = UnityEngine.Color.black;
+                lr.endColor = UnityEngine.Color.black;
                 break;
         }
         rb = This_lazer.AddComponent<Rigidbody2D>();

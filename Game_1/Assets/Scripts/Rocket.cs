@@ -1,8 +1,10 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(CircleCollider2D))]
@@ -24,65 +26,40 @@ public class Rocket : MonoBehaviour
                 {
                     case Color_state.red:
                         color = Color_state.red;
-                        spriteRenderer.color = Color.red;
+                        spriteRenderer.color = UnityEngine.Color.red;
                         break;
                     case Color_state.blue:
                         color = Color_state.blue;
-                        spriteRenderer.color = Color.blue;
+                        spriteRenderer.color = UnityEngine.Color.blue;
                         break;
                     case Color_state.purple:
                         color = Color_state.purple;
-                        spriteRenderer.color = Color.magenta;
+                        spriteRenderer.color = UnityEngine.Color.magenta;
                         break;
                     default:
                         color = Color_state.red;
-
                         break;
                 }
             }
         }
     }
-
-    bool b = true; 
     public void Start()
     {
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         Mycolor = Color_state.red;
         target = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform;
-        switch (Random.Range(0, 8))
+        switch (Random.Range(0, 2))
         {
             case 0:
-                transform.position = new Vector3(target.position.x - 10, target.position.y - 10, 0);
+                transform.position = new Vector3(target.position.x + 11 * Mathf.Cos(360 *  Mathf.Deg2Rad + Random.Range(-75,75) * Mathf.Deg2Rad), target.position.y + 11 * Mathf.Sin(360 * Mathf.Deg2Rad + Random.Range(-90,90) * Mathf.Deg2Rad), 0);
                 break;
             case 1:
-                transform.position = new Vector3(target.position.x - 10, target.position.y + 10, 0);
-                break;
-            case 2:
-                transform.position = new Vector3(target.position.x + 10, target.position.y + 10, 0);
-                break;
-            case 3:
-                transform.position = new Vector3(target.position.x + 10, target.position.y - 10, 0);
-                break;
-            case 4:
-                transform.position = new Vector3(target.position.x - 7, target.position.y - 8, 0);
-                break;
-            case 5:
-                transform.position = new Vector3(target.position.x - 9, target.position.y + 6, 0);
-                break;
-            case 6:
-                transform.position = new Vector3(target.position.x + 5, target.position.y + 7, 0);
-                break;
-            case 7:
-                transform.position = new Vector3(target.position.x + 8, target.position.y - 7, 0);
+                transform.position = new Vector3(target.position.x + 11 * Mathf.Cos(360 * Mathf.Deg2Rad + Random.Range(105, 255) * Mathf.Deg2Rad), target.position.y + 11 * Mathf.Sin(360 * Mathf.Deg2Rad + Random.Range(90, 270) * Mathf.Deg2Rad), 0);
                 break;
         }
         LaunchRocket(target.gameObject, gameObject, 3);
     }
-    public void Update()
-    {
-       
-    }
-
+    //“ут был update
     void LaunchRocket(GameObject target, GameObject rocket, int speed)
     {
         rocket.GetComponent<Rigidbody2D>().AddForce((target.transform.position - rocket.transform.position) * speed, ForceMode2D.Impulse);
@@ -93,19 +70,11 @@ public class Rocket : MonoBehaviour
     {
         if (collision.gameObject == Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().shield)
         {
-
-            if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color != Mycolor)
-            {
-
-                Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();
-            }
+            if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color != Mycolor) Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();            
             Destroy(gameObject);
-
         }
     }
 }
-
-
 public class RocketRepocitory : Repository
 {
     public Rocket_controller rocket_Controller;
@@ -113,7 +82,6 @@ public class RocketRepocitory : Repository
 }
 public class RocketInteractor : Interactor
 {
-
     RocketRepocitory rocketRepocitory;
     public Rocket CreateRocket(Rocket_controller controller, Color_state color)
     {
@@ -153,7 +121,6 @@ public class Rocket_controller : MonoBehaviour
     {
         StartCoroutine(LaunchRocket());
     }
-
     public IEnumerator LaunchRocket()
     {
         for (int i = 0; i < count; i++)
@@ -167,7 +134,6 @@ public class Rocket_controller : MonoBehaviour
         }
         Scene_1.Now_atack = false;
     }
-
 }
 
 

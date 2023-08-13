@@ -69,10 +69,10 @@ public class Turret : MonoBehaviour
         lineRenderer = gameObject.GetComponent<LineRenderer>();
         animator = gameObject.GetComponent<Animator>();
         target = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform;
-        lineRenderer.SetColors(Color.red, Color.red);
+        lineRenderer.startColor= Color.red;
+        lineRenderer.endColor= Color.red;
         lineRenderer.positionCount = 0;
-    }
-   
+    }   
     public void Update()
     {
        
