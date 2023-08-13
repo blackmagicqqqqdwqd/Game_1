@@ -147,7 +147,7 @@ public class LazerWallsInteractor : Interactor
         }
     }
     public void Clear() => repository.lazers.Clear();
-    public void atack_sleepers(int count, Vector3 start_position)
+    public void atack_sleepers  (int count, Vector3 start_position)
     {
         var g = new GameObject();
         var s = g.AddComponent<Lazer_controller>();

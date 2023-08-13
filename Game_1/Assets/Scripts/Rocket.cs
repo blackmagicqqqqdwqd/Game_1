@@ -47,7 +47,7 @@ public class Rocket : MonoBehaviour
     public void Start()
     {
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-        Mycolor = (Color_state)Random.Range(1, 4);
+        Mycolor = Color_state.red;
         target = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform;
         switch (Random.Range(0, 8))
         {
@@ -158,9 +158,11 @@ public class Rocket_controller : MonoBehaviour
     {
         for (int i = 0; i < count; i++)
         {
-            Scene_1.s.interactorsBase.GetInteractor<RocketInteractor>().Massage_about_atack();
-            yield return new WaitForSeconds(2);
-            Scene_1.s.interactorsBase.GetInteractor<RocketInteractor>().CreateRocket(this, (Color_state)Random.Range(1, 4));
+            Color_state color = (Color_state)Random.Range(1, 4);
+            GameObject.Find("massage").GetComponent<UI_Massage>().Massage_ON(color);
+            //Scene_1.s.interactorsBase.GetInteractor<RocketInteractor>().Massage_about_atack();
+            yield return new WaitForSeconds(4);
+            Scene_1.s.interactorsBase.GetInteractor<RocketInteractor>().CreateRocket(this, color);
             yield return new WaitForSeconds(1);
         }
         Scene_1.Now_atack = false;
