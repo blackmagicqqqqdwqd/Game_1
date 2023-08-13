@@ -65,6 +65,8 @@ public class Scene_1 : MonoBehaviour
             }
           
         }
+        if (Input.GetKeyDown(KeyCode.N)) StartCoroutine(s.repositorysBase.GetRepository<LazerwebRepocitory>().lazerwebController.LazerwebSpawn());
+        if (Input.GetKeyDown(KeyCode.M)) s.interactorsBase.GetInteractor<LazerwebInteractor>().CreateController();
         //if(Input.GetMouseButton(1)) s.repositorysBase.GetRepository<LazerWallsRepository>().lazers[0].Move(new Vector3(0, 10*Time.deltaTime, 0));
         //if (Input.GetMouseButton(0)) { s.interactorsBase.GetInteractor<TurretsInteractor>().DestroyTurren(s.repositorysBase.GetRepository<TurretsRepocitort>().turrets[0]); }
     }

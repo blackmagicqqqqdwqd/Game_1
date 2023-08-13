@@ -8,18 +8,19 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public class Lazerweb : MonoBehaviour
 {
     LineRenderer lr;
-    Color_state color = Color_state.random;
+    Color_state color = Color_state.red;
     GameObject This_laser = new GameObject();
-    void Start()
+    public Lazerweb()
     {
+        float radius = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.radius;
         This_laser.transform.SetParent(GameObject.Find("background").transform);
         lr = This_laser.AddComponent<LineRenderer>();
-        lr.sortingOrder = 1;
-        lr.SetPosition(0, new Vector2(-7, Random.Range(-24, -17)));
-        lr.SetPosition(1, new Vector2(7, Random.Range(-24, -17)));
+        lr.sortingOrder = 2;
+        lr.SetPosition(0, new Vector2(-7, Random.Range(-24-radius, -22+radius)));
+        lr.SetPosition(1, new Vector2(7, Random.Range(-24-radius, -22+radius)));
         lr.startWidth = 0.3f;
         lr.endWidth = 0.3f;
-        lr.material = Resources.Load<Material>("Lazer");
+        lr.material = Resources.Load<Material>("Material/Lazer");
         switch (color)
         {
             case Color_state.red:
@@ -48,8 +49,8 @@ public class Lazerweb : MonoBehaviour
         This_laser.GetComponent<LineRenderer>().BakeMesh(mesh);
         meshFilter.sharedMesh = mesh;
         MeshRenderer meshRenderer = This_laser.AddComponent<MeshRenderer>();
-        meshRenderer.sharedMaterial = Resources.Load<Material>("Lazer");
-        meshRenderer.sortingOrder = 1;
+        meshRenderer.sharedMaterial = Resources.Load<Material>("Material/Lazer");
+        meshRenderer.sortingOrder = 2;
         GameObject.Destroy(This_laser.GetComponent<LineRenderer>());
     }
     void Update()
@@ -73,8 +74,8 @@ public class LazerwebInteractor : Interactor
     public Lazerweb CreateLazerweb()
     {
         if(lazerwebrepocitory == null) CreateController();
-        GameObject gameobject = new GameObject();
-        Lazerweb lazerweb = GameObject.Instantiate(Resources.Load<GameObject>("Lazerweb")).GetComponent<Lazerweb>();
+        Lazerweb lazerweb = new Lazerweb();
+        //Lazerweb lazerweb = GameObject.Instantiate(Resources.Load<GameObject>("Lazerweb")).GetComponent<Lazerweb>();
         return lazerweb;
     }
     public override void Initialize() => lazerwebrepocitory = Scene_1.s.repositorysBase.GetRepository<LazerwebRepocitory>();
@@ -82,7 +83,7 @@ public class LazerwebInteractor : Interactor
     {
         if (lazerwebrepocitory.lazerwebController == null)
         {
-            GameObject gameObject = new GameObject("controller");
+            GameObject gameObject = new GameObject();
             lazerwebrepocitory.lazerwebController = gameObject.AddComponent<LazerwebController>();
         }
     }
@@ -100,9 +101,8 @@ public class LazerwebController : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             Color_state color = (Color_state)Random.Range(1, 4);
-            yield return new WaitForSeconds(0.25f);
             Scene_1.s.interactorsBase.GetInteractor<LazerwebInteractor>().CreateLazerweb();
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(2f);
         }
     }
 }
