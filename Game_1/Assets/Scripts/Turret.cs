@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 [RequireComponent(typeof(LineRenderer))]
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(Animation))]
@@ -19,17 +20,55 @@ public class Turret : MonoBehaviour
         rotation_and_shoot,
         destroy
     }
+    public State MyState { get; set; } = State.wait;
 
-    private Color_state color = Color_state.red;
-    public Color_state Mycolor
+    [SerializeField] private Animator animator;
+    [SerializeField] private LineRenderer lineRenderer;
+    
+  
+    private Color color = Color.white;
+    public Color Mycolor
     {
-        get { return color; }
+        get
+        {
+           // if (lineRenderer != null && color != Color.blue || color == Color.red || color == Color.magenta) 
+         //   {
+         //       color = Color.red;
+         //       lineRenderer.startColor = color;
+          //      lineRenderer.endColor = color;
+          //  }
+            return color;
+        }
         set
         {
+            if (lineRenderer != null )
+            {
+                if (value == Color.blue || value == Color.red || value == Color.magenta)
+                {
+                    color = value;
+                    lineRenderer.startColor = value;
+                    lineRenderer.endColor = value;
+                }
+                else if (value == Color.black)
+                {
+                    var v = new[] { Color.blue, Color.red, Color.magenta };
+                    color = v[UnityEngine.Random.Range(0, v.Length)];
+                    lineRenderer.startColor = color;
+                    lineRenderer.endColor = color;
+                }
+                else
+                {
+                    color = Color.white;
+                    lineRenderer.startColor = color;
+                    lineRenderer.endColor = color;
+                }
+            }
+           
+            /*
             switch (value)
             {
-                case Color_state.red:
-                    color = Color_state.red;
+                case n:
+                    color = Color.red;
                     lineRenderer.startColor = Color.red;
                     lineRenderer.endColor = Color.red;
                     break;
@@ -48,17 +87,16 @@ public class Turret : MonoBehaviour
                     lineRenderer.startColor = Color.red;
                     lineRenderer.endColor = Color.red;
                     break;
-            }
+            }*/
         }
     }
 
-    public State MyState { get; set; } = State.wait;
-   
+    
     public Vector3 Spawn_position { get; set; }
     public Vector3 atack_position { get; set; }
 
-    private LineRenderer lineRenderer;
-    private Animator animator;
+ 
+   
     private Transform target;
     private float move_speed = 6;
     private float lazer_speed = 10;
@@ -66,11 +104,13 @@ public class Turret : MonoBehaviour
 
     public void Start()
     {
-        lineRenderer = gameObject.GetComponent<LineRenderer>();
-        animator = gameObject.GetComponent<Animator>();
         target = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform;
-        lineRenderer.startColor= Color.red;
-        lineRenderer.endColor= Color.red;
+       // lineRenderer.startColor= Color.red;
+        //lineRenderer.endColor= Color.red;
+
+        animator = gameObject.GetComponent<Animator>();
+        lineRenderer = gameObject.GetComponent<LineRenderer>();
+        Mycolor = Color.black;
         lineRenderer.positionCount = 0;
     }   
     public void Update()
@@ -112,13 +152,11 @@ public class Turret : MonoBehaviour
                 Charging();
                 break;
             case State.destroy:
-            
                 Destroy(gameObject);
                 break;
             case State.rotation_and_charging:
-             
                 Charging();
-            
+                Debug.Log(2);
                 Move_on_atack_position();
                 break;
             case State.rotation_and_shoot:
@@ -127,13 +165,14 @@ public class Turret : MonoBehaviour
                 break;
         }
 
+      
 
-
-
-        if (lineRenderer.positionCount != 0 && Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.OverlapPoint(lineRenderer.GetPosition(1)) && (MyState ==State.shoot || MyState == State.rotation_and_shoot))
+        /*
+        if (lineRenderer.positionCount != 0 && Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.circleCollider.OverlapPoint(lineRenderer.GetPosition(1)) && (MyState ==State.shoot || MyState == State.rotation_and_shoot))
         {
-            if (Mycolor != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color)
+            if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.GetShieldColor() != Mycolor)
             {
+                
                 Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();
                 MyState = State.wait;
                 transform.parent.GetComponent<Turret_controller>().atack = false;
@@ -143,7 +182,7 @@ public class Turret : MonoBehaviour
             transform.parent.GetComponent<Turret_controller>().atack = false;
             lineRenderer.positionCount = 0;
             MyState = State.move_on_spawn_zone;
-        }
+        }*/
 
     }
     public void Atack()
@@ -161,7 +200,32 @@ public class Turret : MonoBehaviour
            lineRenderer.SetPosition(1, Vector3.MoveTowards(transform.position, target.position, lenth)  );
            lenth += lazer_speed * Time.deltaTime;
         }
-          
+      
+        
+        if (Physics2D.Linecast(transform.position, lineRenderer.GetPosition(1)))
+        {
+            RaycastHit2D hit = Physics2D.Linecast(transform.position, target.position);
+            if (hit.transform.tag == "Player")
+            {
+                Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();
+                lineRenderer.SetPosition(1, target.position);
+                MyState = State.move_on_spawn_zone;
+                lineRenderer.positionCount = 0;
+                transform.parent.GetComponent<Turret_controller>().atack = false;
+            }
+            else if (hit.transform.tag == "Shield")
+            {
+               // lineRenderer.SetPosition(1, hit.point);
+                if (hit.transform.GetComponent<Shield>().Compare_Color(color))
+                {
+                    lineRenderer.SetPosition(1, hit.transform.position);
+                    MyState = State.move_on_spawn_zone;
+                    lineRenderer.positionCount = 0;
+                    transform.parent.GetComponent<Turret_controller>().atack = false;
+                }
+               // else Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();
+            }
+        }
     }
 
     
@@ -170,15 +234,9 @@ public class Turret : MonoBehaviour
         
         if (animator.GetBool(0) == false || animator.GetBool(1) == false || animator.GetBool(0) == false)
         {
-            Debug.Log(1);
-            if (Mycolor == Color_state.purple) animator.SetBool("magenta_atack", true);
-            else if (Mycolor == Color_state.blue) animator.SetBool("blue_atack", true);
-            else if (Mycolor == Color_state.red)
-            {
-
-                animator.SetBool("red_atack", true);
-            }
-            
+            if (color == Color.magenta) animator.SetBool("magenta_atack", true);
+            else if (color == Color.blue) animator.SetBool("blue_atack", true);
+            else if (color == Color.red) animator.SetBool("red_atack", true);            
         }
      
     }

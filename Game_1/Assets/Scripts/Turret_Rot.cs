@@ -1,39 +1,74 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using static Turret_Rot;
 
+[RequireComponent(typeof(LineRenderer))]
 public class Turret_Rot : MonoBehaviour
 {
-    public enum State
-    {
-        move_on_atack_zone,
-        move_on_spawn_zone,
-        loading_anim,
-        shoot,
-        wait,
-        destroy
-    }
-
+    public enum State { move_on_atack_zone,  move_on_spawn_zone,  loading_anim,  shoot,   wait,  destroy }
     public State MyState { private set; get; } = State.move_on_atack_zone;
-    public Turret_Rot_clone turret_data;
+    private Transform target;  
+    private Color color = Color.white;
+    public Color Mycolor
+    {
+        get
+        {
+            return color;
+        }
+        set
+        {
+            if (lineRenderer != null)
+            {
+                if (value == Color.blue || value == Color.red || value == Color.magenta)
+                {
+                    color = value;
+                    lineRenderer.startColor = value;
+                    lineRenderer.endColor = value;
+                }
+                else if (value == Color.black)
+                {
+                    var v = new[] { Color.blue, Color.red, Color.magenta };
+                    color = v[UnityEngine.Random.Range(0, v.Length)];
+                    lineRenderer.startColor = color;
+                    lineRenderer.endColor = color;
+                }
+                else
+                {
+                    color = Color.white;
+                    lineRenderer.startColor = color;
+                    lineRenderer.endColor = color;
+                }
+            }
+        }
+    }
     private float angle = 90;
     private bool lazerActivate;
     private float roration_speed = 0.02f;
-
+    private LineRenderer lineRenderer; 
+    private SpriteRenderer spriteRenderer;
+    public void Start()
+    {
+        lineRenderer.GetComponent<LineRenderer>();
+        spriteRenderer. GetComponent<SpriteRenderer>();
+        target = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform;
+    }
     void Update()
     {
         switch (MyState)
         { 
             case State.loading_anim:
                 break;
-
+            case State.shoot:
+                break;
+            case State.destroy:
+                break;
         }
 
-        if (lazerActivate == false && (turret_data.Lr.GetPosition(1) - Move(transform.position, 90, 18)).magnitude > 1)
+        if (lazerActivate == false && (lineRenderer.GetPosition(1) - Move(transform.position, 90, 18)).magnitude > 1)
         {
-            turret_data.Lr.SetPosition(1, Vector3.MoveTowards(turret_data.Lr.GetPosition(1), Move(transform.position, 90, 18), 10 * Time.deltaTime));
+            lineRenderer.SetPosition(1, Vector3.MoveTowards(lineRenderer.GetPosition(1), Move(transform.position, 90, 18), 10 * Time.deltaTime));
         }
         else
         {
@@ -46,11 +81,29 @@ public class Turret_Rot : MonoBehaviour
             angle -= roration_speed;
 
         }
-       if (Physics2D.Linecast(transform.position, turret_data.Lr.GetPosition(1)))
+
+        if (Physics2D.Linecast(transform.position, lineRenderer.GetPosition(1)))
         {
-            if (turret_data.My_Color != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color) 
+            RaycastHit2D hit = Physics2D.Linecast(transform.position, lineRenderer.GetPosition(1));
+            if (hit.transform.tag == "Player")
             {
                 Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();
+                lineRenderer.SetPosition(1, target.position);
+                lineRenderer.positionCount = 0;
+            }
+            else if (hit.transform.tag == "Shield")
+            {       
+                if (hit.transform.GetComponent<Shield>().Compare_Color(Mycolor))
+                {
+                    lineRenderer.SetPosition(1, hit.transform.position);
+                    lineRenderer.positionCount = 0;
+                }
+                else
+                {
+                    lineRenderer.SetPosition(1, hit.transform.position);             
+                    lineRenderer.positionCount = 0;
+                    Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();
+                }
             }
         }
 
@@ -58,7 +111,7 @@ public class Turret_Rot : MonoBehaviour
 
     public void atack(Vector3 target)
     {
-        turret_data.Lr.SetPosition(1, target);
+        //turret_data.Lr.SetPosition(1, target);
     }
 
     public Vector3 Move(Vector2 start, float angle, float rad)
@@ -81,68 +134,30 @@ public class Turret_RotIterator : Interactor
     }
     public void Creat_Turret_Rot(float x, float y, Color_state color)
     {
-        my_repocitory.turrets.Add(new Turret_Rot_clone(x, y, color));
+        //my_repocitory.turrets.Add(new Turret_Rot_clone(x, y, color));
     }
-}
-public class Turret_Rot_clone
-{
-    GameObject this_turret;
-    public LineRenderer Lr { get; set; }
-    public Color_state My_Color { get; set; }
-    public Turret_Rot_clone(float x, float y, Color_state color, float start_angle = 90, float lazer_lenth = 18)
+    public Turret_rot_controller Creat_controller()
     {
-        My_Color = color;
-        this_turret = new GameObject();
-        this_turret.transform.position = new Vector3(x, y, 0);
+        GameObject gameObject = new GameObject("Contoller_turrets");
+        Turret_rot_controller contoller = gameObject.AddComponent<Turret_rot_controller>();
+        my_repocitory.controller = contoller;
 
-        SpriteRenderer sr = this_turret.AddComponent<SpriteRenderer>();
-        sr.sprite = Resources.Load<Sprite>("Sprites/ProtectedCircle");
-        sr.sortingOrder = 2;
-
-        Lr = this_turret.AddComponent<LineRenderer>();
-        Lr.sortingOrder = 1;
-        Lr.material = Resources.Load<Material>("Lazer");
-        Lr.SetWidth(0.25f, 0.25f);
-        Lr.SetColors(Color.magenta, Color.magenta);
-        Lr.SetPosition(0, this_turret.transform.position);
-        Lr.SetPosition(1, this_turret.transform.position);
-
-        this_turret.AddComponent<Turret_Rot>().turret_data = this;
-
-        switch (color)
-        {
-            case Color_state.red:
-                Lr.SetColors(Color.red, Color.red);
-                break;
-            case Color_state.blue:
-                Lr.SetColors(Color.blue, Color.blue);
-                break;
-            case Color_state.purple:
-                Lr.SetColors(Color.magenta, Color.magenta);
-                break;
-            case Color_state.none:
-                Lr.SetColors(Color.white, Color.white);
-                break;
-            default:
-                Lr.SetColors(Color.red, Color.red);
-                break;
-        }
+        if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player == null)
+            gameObject.transform.position = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.transform.position;
+        return contoller;
 
     }
 }
+
 public class Turret_RotRepocitory : Repository
 {
-    public List<Turret_Rot_clone> turrets;
-    public override void Initialize()
-    {
-        turrets = new List<Turret_Rot_clone>();
-    }
+    public Turret_rot_controller controller;
 }
 
 public class Turret_rot_controller : MonoBehaviour
 {
-    //public List<Turret_Clone> turrets;
-    int index_now_turret;
+    public List<Turret_Rot> turrets = new List<Turret_Rot>();
+    //int index_now_turret;
     public bool atack;
     public float rad;
     public int amount;
@@ -150,7 +165,7 @@ public class Turret_rot_controller : MonoBehaviour
 
     public void Start()
     {
-      
+        
     }
     public void Update()
     {

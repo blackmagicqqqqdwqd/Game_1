@@ -12,7 +12,7 @@ public class Lazerweb : MonoBehaviour
     GameObject This_laser = new GameObject();
     public Lazerweb()
     {
-        float radius = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().ccPlayer.radius;
+        float radius = Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().player.circleCollider.radius;
         This_laser.transform.SetParent(GameObject.Find("background").transform);
         lr = This_laser.AddComponent<LineRenderer>();
         lr.sortingOrder = 2;
@@ -54,12 +54,12 @@ public class Lazerweb : MonoBehaviour
         GameObject.Destroy(This_laser.GetComponent<LineRenderer>());
     }
     void Update()
-    {        
+    {        /*
         if (transform.TransformPoint(This_laser.transform.position).y > 30) Destroy(This_laser);
         if (Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().shield.GetComponent<CircleCollider2D>().OverlapPoint(This_laser.GetComponent<MeshRenderer>().bounds.center))
         {
             if (color != Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory>().color) Scene_1.s.interactorsBase.GetInteractor<PlayerInteractor>().Get_Damag();
-        }
+        }*/
     }
 }
 

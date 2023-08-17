@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class LazerSpawn : MonoBehaviour
 {
+    /*
     public GameObject This_laser { get; set; }
     public Rigidbody2D rb;
     public Color_state Color { get; set; }
@@ -87,5 +88,5 @@ public class LazerSpawn : MonoBehaviour
             Lazer_Spawn(new Vector2(-7, Random.Range(-24, -17)), new Vector2(7, Random.Range(-24, -17)));
             Lazer_Spawn(new Vector2(-7, Random.Range(-24, -17)), new Vector2(7, Random.Range(-24, -17)));
         }        
-    }
+    }*/
 }

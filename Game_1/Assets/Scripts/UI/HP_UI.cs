@@ -32,7 +32,7 @@ public class HP_UIInteractor:Interactor
     }
     public void Show_HP()
     {
-        for (int i = 0; i < Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory >().HP; i++)
+        for (int i = 0; i < Scene_1.s.repositorysBase.GetRepository<PlayerRepocitory >().player.HP; i++)
         {
             GameObject go = new GameObject();
             go.transform.SetParent(GameObject.Find("Canvas").transform);
@@ -50,7 +50,7 @@ public class HP_UIInteractor:Interactor
     }
     public void Set_HP(int x) 
     {
-        //0 1 2 3    2
+       
        if (repocitory.Images.Count>0 && x >= 0)
         {
             int last_index = repocitory.Images.Count;

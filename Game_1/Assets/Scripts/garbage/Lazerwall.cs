@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 
-
+/*
 public class Lazerwall : MonoBehaviour
 {
     public Lazerwall_clone lazerwall;
@@ -193,3 +193,4 @@ public class Lazer_controller:MonoBehaviour
 }
 
 
+*/

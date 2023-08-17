@@ -21,7 +21,6 @@ public class UI_Massage : MonoBehaviour
     IEnumerator wait()
     {
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        Debug.Log(1);
         yield return new WaitForSeconds(2);
         animator.SetBool("massage_on", false);
         spriteRenderer.enabled = false;
